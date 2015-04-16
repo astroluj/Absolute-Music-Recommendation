@@ -1,16 +1,16 @@
 # MIII-M3-
-Music Make Meet / Mobile Application
+#Music Make Meet / Mobile Application
 
-모바일 클라우드 제안서
-MIII(Music Make, Meet)
+#모바일 클라우드 제안서
+#MIII(Music Make, Meet)
 
 
-목차
+#목차
 
-1 어플리케이션 목적
-2 아키텍쳐 (Server, Client, DB)
-3 구현 기능 및 구현 예정 기능
-4 예상 스케쥴 (Server, Client, DB) 
+1 어플리케이션 목적<br>
+2 아키텍쳐 (Server, Client, DB)<bR>
+3 구현 기능 및 구현 예정 기능<br>
+4 예상 스케쥴 (Server, Client, DB)<bR> 
 
 
 
