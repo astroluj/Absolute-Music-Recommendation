@@ -1,6 +1,10 @@
 package com.music.player;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +17,10 @@ import android.widget.SeekBar;
 public class MainActivity extends Activity {
 
 	private final static long INTERVAL = 1000 ;
+	private final static String MUSIC_RECOMMEND_REQUEST = "com.amr.request";
+	private final static String MUSIC_RECOMMEND_RESPONSE = "com.amr.reponse" ;
+	
+	private RecommendationReciever recommedRecv ;
 	
 	private MediaPlayer mediaPlayer ;
 	private SeekBar musicSeekbar;
@@ -20,6 +28,7 @@ public class MainActivity extends Activity {
 	
 	private Handler playHandler = new Handler();
 	
+	private boolean isFirstPlayFlag ;
 	private int songDuration ;
 
 	@Override
@@ -61,6 +70,24 @@ public class MainActivity extends Activity {
 		}
 		// stopping
 		else {
+			// Send Broad
+			if (isFirstPlayFlag == false) {
+				isFirstPlayFlag = true ;
+				
+				// Register Receiver
+				if (recommedRecv == null) {
+					recommedRecv = new RecommendationReciever() ;
+					registerReceiver(recommedRecv, new IntentFilter (MUSIC_RECOMMEND_RESPONSE)) ;
+				}
+				// Set Action
+				Intent intent = new Intent (MUSIC_RECOMMEND_REQUEST) ;
+				// Set Data
+				intent.putExtra("title", "어쩌란 말입니까") ;
+				intent.putExtra("singer", "한반도") ;
+				
+				// Request Recommendation list
+				sendBroadcast(intent);
+			}
 			playHandler.postDelayed(moveSeekBar, INTERVAL);
 			mediaPlayer.start () ;
 			playBtn.setImageResource (android.R.drawable.ic_media_pause) ;
@@ -83,6 +110,20 @@ public class MainActivity extends Activity {
 		}
 	};
 	
+	
+	// Catch Recommendation list on Intent Action 
+	private class RecommendationReciever extends BroadcastReceiver {
+		public void onReceive(Context context, Intent intent) {
+
+			// Check Action
+			if (intent.getAction().equals(MUSIC_RECOMMEND_RESPONSE)) {
+				// Push shows music list
+				
+				unregisterReceiver () ;
+			}
+		}
+	}
+	
 	@Override
 	public void onDestroy () {
 		super.onDestroy();
@@ -90,5 +131,19 @@ public class MainActivity extends Activity {
 		mediaPlayer.stop();
 		mediaPlayer.release();
 		playHandler.removeCallbacks(moveSeekBar) ;
+		
+		unregisterReceiver () ;
+	}
+	
+	private void unregisterReceiver () {
+		// UnRegister Receiver
+		try {
+			if (recommedRecv != null) {
+				unregisterReceiver(recommedRecv);
+				recommedRecv = null ;
+			} 
+		} catch (IllegalArgumentException e) {
+			recommedRecv = null ;
+		}
 	}
 }
