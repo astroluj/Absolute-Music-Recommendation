@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
 
 	private final static long INTERVAL = 1000 ;
 	private final static String MUSIC_RECOMMEND_REQUEST = "com.amr.request";
-	private final static String MUSIC_RECOMMEND_RESPONSE = "com.amr.reponse" ;
+	private final static String MUSIC_RECOMMEND_RESPONSE = "com.music.player.response" ;
 	
 	private RecommendationReciever recommedRecv ;
 	
@@ -84,6 +84,8 @@ public class MainActivity extends Activity {
 				// Set Data
 				intent.putExtra("title", "어쩌란 말입니까") ;
 				intent.putExtra("singer", "한반도") ;
+				// Want to intent action
+				intent.putExtra("action", MUSIC_RECOMMEND_RESPONSE) ;
 				
 				// Request Recommendation list
 				sendBroadcast(intent);
