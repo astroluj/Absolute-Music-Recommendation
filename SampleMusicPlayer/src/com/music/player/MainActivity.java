@@ -1,13 +1,18 @@
 package com.music.player;
 
+import com.amr.aidl.amrAIDL;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +27,10 @@ public class MainActivity extends Activity {
 	
 	private RecommendationReciever recommedRecv ;
 	
+	// AIDL
+	amrAIDL aidlService;
+	ServiceConnection serviceConn;
+		
 	private MediaPlayer mediaPlayer ;
 	private SeekBar musicSeekbar;
 	private ImageButton playBtn ;
@@ -38,8 +47,22 @@ public class MainActivity extends Activity {
 		//set the layout of the Activity
 		setContentView(R.layout.activity_main);
 
+		// TODO : 필수
+		// AIDL SET
+		serviceConn = new ServiceConnection() {
+			public void onServiceDisconnected(ComponentName name) {
+				aidlService = null;
+			}
+
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				aidlService = amrAIDL.Stub.asInterface(service);
+			}
+		};
+				
 		//initialize views
 		initializes();
+		
+		
 	}
 	
 	public void initializes(){

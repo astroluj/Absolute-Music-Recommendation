@@ -8,11 +8,32 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="22" />
 
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:theme="@style/AppTheme" >
+        <service
+            android:name="com.amr.aidlService"
+            android:enabled="true"
+            android:process=":amr" >
+            <intent-filter>
+                <action android:name="com.amr.aidlService" />
+            </intent-filter>
+        </service>
+        
+        <service
+            android:name="com.amr.service.AMRService"
+            android:enabled="true"
+            android:process=":amr" >
+            <intent-filter>
+                <action android:name="com.amr.service.AMRService" />
+            </intent-filter>
+        </service>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
