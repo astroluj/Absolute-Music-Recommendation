@@ -16,21 +16,13 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/AppTheme" >
-        <service
-            android:name="com.amr.aidlService"
-            android:enabled="true"
-            android:process=":amr" >
-            <intent-filter>
-                <action android:name="com.amr.aidlService" />
-            </intent-filter>
-        </service>
         
         <service
-            android:name="com.amr.service.AMRService"
+            android:name="com.amr.service.AIDLService"
             android:enabled="true"
             android:process=":amr" >
             <intent-filter>
-                <action android:name="com.amr.service.AMRService" />
+                <action android:name="com.amr.service.AIDLService" />
             </intent-filter>
         </service>
 

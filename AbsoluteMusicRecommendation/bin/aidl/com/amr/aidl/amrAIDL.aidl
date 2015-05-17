@@ -2,8 +2,8 @@ package com.amr.aidl ;
 
 interface amrAIDL {
 	
-	void transferMusic (String path) ;
-	String analyzationMusic () ;
+	boolean getAnalyzeToRecommendLists (String analyzeData) ;
 	
-	boolean serviceEnabled () ;
+	boolean getInformationToRecommendLists (String artist, String title, String recvAction) ;
+	
 }

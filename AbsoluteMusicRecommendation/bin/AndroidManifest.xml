@@ -13,15 +13,16 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+        
+        <service
+            android:name="com.amr.service.AIDLService"
+            android:enabled="true"
+            android:process=":amr" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="com.amr.service.AIDLService" />
             </intent-filter>
-        </activity>
+        </service>
+        
     </application>
 
 </manifest>

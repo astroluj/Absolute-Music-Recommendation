@@ -13,7 +13,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.SystemClock;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -21,9 +21,9 @@ import android.widget.SeekBar;
 
 public class MainActivity extends Activity {
 
-	private final static long INTERVAL = 1000 ;
-	private final static String MUSIC_RECOMMEND_REQUEST = "com.amr.request";
-	private final static String MUSIC_RECOMMEND_RESPONSE = "com.music.player.response" ;
+	private final String TAG = "Sample Music Player :" ;
+	private final long INTERVAL = 1000 ;
+	private final String MUSIC_RECOMMEND_RESPONSE = "com.music.player.response" ;
 	
 	private RecommendationReciever recommedRecv ;
 	
@@ -93,26 +93,6 @@ public class MainActivity extends Activity {
 		}
 		// stopping
 		else {
-			// Send Broad
-			if (isFirstPlayFlag == false) {
-				isFirstPlayFlag = true ;
-				
-				// Register Receiver
-				if (recommedRecv == null) {
-					recommedRecv = new RecommendationReciever() ;
-					registerReceiver(recommedRecv, new IntentFilter (MUSIC_RECOMMEND_RESPONSE)) ;
-				}
-				// Set Action
-				Intent intent = new Intent (MUSIC_RECOMMEND_REQUEST) ;
-				// Set Data
-				intent.putExtra("title", "어쩌란 말입니까") ;
-				intent.putExtra("singer", "한반도") ;
-				// Want to intent action
-				intent.putExtra("action", MUSIC_RECOMMEND_RESPONSE) ;
-				
-				// Request Recommendation list
-				sendBroadcast(intent);
-			}
 			playHandler.postDelayed(moveSeekBar, INTERVAL);
 			mediaPlayer.start () ;
 			playBtn.setImageResource (android.R.drawable.ic_media_pause) ;
@@ -125,6 +105,25 @@ public class MainActivity extends Activity {
 		
 		public void run () {
 			try {
+				// Send Broad
+				if (isFirstPlayFlag == false) {
+					
+					// Register Receiver
+					if (recommedRecv == null) {
+						recommedRecv = new RecommendationReciever() ;
+						registerReceiver(recommedRecv, new IntentFilter (MUSIC_RECOMMEND_RESPONSE)) ;
+					}
+					// Call AIDL
+					try {
+						aidlService.getInformationToRecommendLists("한반도", "어쩌란 말입니까",
+								MUSIC_RECOMMEND_RESPONSE) ;
+						isFirstPlayFlag = true ;
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					} catch (NullPointerException e) {
+					}
+				}
+				
 				//Get Current Position
 				currentPos = mediaPlayer.getCurrentPosition();
 				// Set SeekBar Position
@@ -143,14 +142,32 @@ public class MainActivity extends Activity {
 			// Check Action
 			if (intent.getAction().equals(MUSIC_RECOMMEND_RESPONSE)) {
 				// Push shows music list
+				String lists[] = intent.getStringArrayExtra("lists") ;
+				// Debug lists
+				for (String list : lists)
+					Log.d (TAG, list) ;
 				
 				unregisterReceiver () ;
 			}
 		}
 	}
 	
-	@Override
-	public void onDestroy () {
+	protected void onPause () {
+		super.onPause() ;
+		
+		// AIDL disable
+		unbindService(serviceConn);
+	}
+
+	protected void onResume() {
+		super.onResume();
+
+		// AIDL enable
+		Intent aidlIntent = new Intent("com.amr.service.AIDLService");
+		Log.d(TAG, "Connection bind " + bindService(aidlIntent, serviceConn, BIND_AUTO_CREATE));
+	}
+	
+	protected void onDestroy () {
 		super.onDestroy();
 		
 		mediaPlayer.stop();
@@ -158,6 +175,9 @@ public class MainActivity extends Activity {
 		playHandler.removeCallbacks(moveSeekBar) ;
 		
 		unregisterReceiver () ;
+		
+		// AIDL disable
+		unbindService(serviceConn);
 	}
 	
 	private void unregisterReceiver () {

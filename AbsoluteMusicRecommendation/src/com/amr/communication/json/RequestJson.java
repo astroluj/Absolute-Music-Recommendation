@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
  
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -22,13 +23,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.amr.util.util;
+
 import android.util.Log;
 
 public class RequestJson {
-     //final String URL ="http://10.100.10.70:29756/app/authUse.do" ;
-     final String SPLIT ="||" ;
-     
-    private ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+
+	private ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
  
         @Override
         public String handleResponse(HttpResponse response) throws IOException {
@@ -51,12 +52,12 @@ public class RequestJson {
 	public String sendData(ArrayList<BasicNameValuePair> post, String URL) throws ClientProtocolException, IOException {
 		
 		// 연결 HttpClient 객체 생성
-		HttpClient client = new DefaultHttpClient();
+		DefaultHttpClient client = new DefaultHttpClient();
 		try {
 			// 객체 연결 설정 부분, 연결 시간, 데이터 대기 시간
 			HttpParams params = client.getParams();
-			HttpConnectionParams.setConnectionTimeout(params, 5000);
-			HttpConnectionParams.setSoTimeout(params, 5000);
+			HttpConnectionParams.setConnectionTimeout(params, util.POST_DELAY_TIME);
+			HttpConnectionParams.setSoTimeout(params, util.POST_DELAY_TIME);
 		 
 			// Post객체 생성
 			HttpPost httpPost = new HttpPost(URL);
@@ -71,9 +72,15 @@ public class RequestJson {
 	}
 	
 
-	public ArrayList<String> attendJsonParser (String responseData) {
+	public ArrayList<String> getInformationToRecommendListsJson (String responseData) {
 		responseData ="[" +responseData +"]" ;
 
+		Log.d ("ABC", responseData) ;
+		return null ;
+		/*‘track_id’: <track_id string>,
+		‘artist’: <string>,
+		‘title’: <string>,
+		‘url’: <string>
 		try {
 			JSONArray jsonArray =new JSONArray(responseData) ;
 			for (int i =0 ; i < jsonArray.length() ; i++) {
@@ -104,41 +111,6 @@ public class RequestJson {
 			return null ;
 		} catch (Exception e) {
 			return null ;
-		}
-	}
-	
-	public ArrayList<String> confirmJsonParser (String responseData) {
-		responseData ="[" +responseData +"]" ;
-		try {
-			JSONArray jsonArray =new JSONArray(responseData) ;
-			for (int i =0 ; i < jsonArray.length() ; i++) {
-				JSONObject body1 =jsonArray.getJSONObject(i) ;
-				if (body1 != null) {
-					JSONObject body2 =body1.getJSONObject("body") ;
-					if (body2 != null) {
-						JSONObject body3 =body2.getJSONObject("body") ;
-						if (body3 != null) {
-							JSONObject authUse =body3.getJSONObject("authUse") ;
-							if (authUse != null) {
-								StringTokenizer token =new StringTokenizer(authUse.getString("AUTH_USE"), SPLIT) ;
-								ArrayList<String> response =new ArrayList<String> () ;
-								while (token.hasMoreTokens()) response.add(token.nextToken()) ;
-								
-								return response ;
-							}
-						}
-					}
-				}
-			}
-			
-			return null ;
-		} catch (JSONException e) {
-			e.printStackTrace() ;
-			Log.e ("JSON Exception", "responseData html or xml") ;
-			
-			return null ;
-		} catch (Exception e) {
-			return null ;
-		}
+		}*/
 	}
 }
