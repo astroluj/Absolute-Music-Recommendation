@@ -39,7 +39,11 @@ public class RequestJson {
             if (status == HttpStatus.SC_OK) { // 200 인경우 성공
                 HttpEntity entity = response.getEntity();
                 
-                return entity != null ? EntityUtils.toString(entity) : null;
+                if ( entity != null)
+                	return EntityUtils.toString(entity) ;
+            	else {Log.d (util.TAG, "AB") ; 
+                	return null;
+                	}
             } else {
                 ClientProtocolException e = new ClientProtocolException("Unexpected response status: " + status);
                 throw e; // 상태코드 200이 아닌경우 예외발생
@@ -66,7 +70,8 @@ public class RequestJson {
 			return client.execute(httpPost, responseHandler);
 		} catch (Exception e) {
 			if (client != null) client.getConnectionManager().shutdown() ;
-			
+			Log.d (util.TAG, "A") ;
+			e.printStackTrace(); 
 			return null ;
 		}
 	}
@@ -75,7 +80,7 @@ public class RequestJson {
 	public ArrayList<String> getInformationToRecommendListsJson (String responseData) {
 		responseData ="[" +responseData +"]" ;
 
-		Log.d ("ABC", responseData) ;
+		Log.d (util.TAG, responseData) ;
 		return null ;
 		/*‘track_id’: <track_id string>,
 		‘artist’: <string>,
