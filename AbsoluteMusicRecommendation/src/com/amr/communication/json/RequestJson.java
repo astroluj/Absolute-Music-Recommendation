@@ -39,11 +39,7 @@ public class RequestJson {
             if (status == HttpStatus.SC_OK) { // 200 인경우 성공
                 HttpEntity entity = response.getEntity();
                 
-                if ( entity != null)
-                	return EntityUtils.toString(entity) ;
-            	else {Log.d (util.TAG, "AB") ; 
-                	return null;
-                	}
+                return entity != null ?EntityUtils.toString(entity) : null ;
             } else {
                 ClientProtocolException e = new ClientProtocolException("Unexpected response status: " + status);
                 throw e; // 상태코드 200이 아닌경우 예외발생
@@ -53,6 +49,7 @@ public class RequestJson {
          
     };
      
+    // Get Post type list
 	public String sendData(ArrayList<BasicNameValuePair> post, String URL) throws ClientProtocolException, IOException {
 		
 		// 연결 HttpClient 객체 생성
@@ -70,13 +67,11 @@ public class RequestJson {
 			return client.execute(httpPost, responseHandler);
 		} catch (Exception e) {
 			if (client != null) client.getConnectionManager().shutdown() ;
-			Log.d (util.TAG, "A") ;
 			e.printStackTrace(); 
 			return null ;
 		}
 	}
 	
-
 	public ArrayList<String> getInformationToRecommendListsJson (String responseData) {
 		responseData ="[" +responseData +"]" ;
 

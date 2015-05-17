@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 
 import com.amr.aidl.amrAIDL;
 import com.amr.communication.json.RequestJson;
@@ -13,6 +14,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class AIDLService extends Service {
 
@@ -37,10 +39,16 @@ public class AIDLService extends Service {
 				RequestJson requestJson = new RequestJson () ;
 				try {
 					// 전송 할 데이터
-					ArrayList<BasicNameValuePair> post = new ArrayList<BasicNameValuePair>();
-					post.add(new BasicNameValuePair("track_id",artist));	// 사번
-					post.add(new BasicNameValuePair("count", title)) ;
+					 ArrayList<BasicNameValuePair> post = new ArrayList<BasicNameValuePair>();
+					 
+					post.add(new BasicNameValuePair("track_id",
+							new JSONArray()
+								.put(artist)
+								.put(title)
+								.toString()));	// 사번
+					post.add(new BasicNameValuePair("count", util.RECOMMEND_COUNT)) ;
 					
+					Log.d (util.TAG, post.toString()) ;
 					requestJson.getInformationToRecommendListsJson(requestJson.sendData(post, util.URL)) ;
 				} catch (IOException e) {
 					e.printStackTrace();
