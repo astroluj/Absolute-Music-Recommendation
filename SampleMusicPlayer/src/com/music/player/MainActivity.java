@@ -175,9 +175,6 @@ public class MainActivity extends Activity {
 		playHandler.removeCallbacks(moveSeekBar) ;
 		
 		unregisterReceiver () ;
-		
-		// AIDL disable
-		unbindService(serviceConn);
 	}
 	
 	private void unregisterReceiver () {
