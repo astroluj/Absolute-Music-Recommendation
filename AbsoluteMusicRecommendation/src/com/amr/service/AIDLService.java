@@ -1,13 +1,17 @@
 package com.amr.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 
 import com.amr.aidl.amrAIDL;
-import com.amr.communication.json.RequestJson;
+import com.amr.network.json.MakeJson;
+import com.amr.network.json.PostJson;
 import com.amr.util.util;
 
 import android.app.Service;
@@ -28,32 +32,35 @@ public class AIDLService extends Service {
 
 			@Override
 			// Client Analyzation music
-			public boolean getAnalyzeToRecommendLists (String analyzeData) throws RemoteException {
+			public boolean getAnalyzeToRecommendLists (String recvAction, String analyzeData, int count) throws RemoteException {
 				return false;
 			}
 
+			// Keyword Searching
 			@Override
-			public boolean getInformationToRecommendLists (String artist,
-					String title, String recvAction) throws RemoteException {
+			public boolean getKeywordToRecommendLists (String recvAction, String artist,
+					String title, int count) throws RemoteException {
 				
-				RequestJson requestJson = new RequestJson () ;
-				try {
-					// 전송 할 데이터
-					 ArrayList<BasicNameValuePair> post = new ArrayList<BasicNameValuePair>();
-					 
-					post.add(new BasicNameValuePair("track_id",
-							new JSONArray()
-								.put(artist)
-								.put(title)
-								.toString()));	// 사번
-					post.add(new BasicNameValuePair("count", util.RECOMMEND_COUNT)) ;
+					PostJson requestJson = new PostJson () ;
+					try {
+						requestJson.getRecommendLists(new MakeJson (artist, title, util.START_INDEX, count), new URL (util.URL_SEARCH)) ;
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					}
 					
-					Log.d (util.TAG, post.toString()) ;
-					requestJson.getInformationToRecommendListsJson(requestJson.sendData(post, util.URL)) ;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
+					try {
+						ArrayList<BasicNameValuePair> post = new ArrayList<BasicNameValuePair> () ;
+						post.add (new BasicNameValuePair(util.ARTIST, artist)) ;
+						post.add (new BasicNameValuePair(util.TITLE, title)) ;
+						post.add (new BasicNameValuePair(util.START, "" + util.START_INDEX)) ;
+						post.add (new BasicNameValuePair(util.COUNT,  "" + count)) ;
+						Log.d (util.TAG, post.toString()) ;
+						requestJson.getRecommendLists(requestJson.sendData(post, util.URL_SEARCH)) ;
+					} catch (ClientProtocolException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				// return false is not exist music in Bonacell Server
 				return false;
 			}

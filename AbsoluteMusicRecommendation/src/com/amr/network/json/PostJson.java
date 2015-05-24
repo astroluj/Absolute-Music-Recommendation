@@ -1,13 +1,25 @@
-package com.amr.communication.json;
+package com.amr.network.json;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
  
 
+
+
+
+
+
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -27,7 +39,7 @@ import com.amr.util.util;
 
 import android.util.Log;
 
-public class RequestJson {
+public class PostJson {
 
 	private ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
  
@@ -53,12 +65,12 @@ public class RequestJson {
 	public String sendData(ArrayList<BasicNameValuePair> post, String URL) throws ClientProtocolException, IOException {
 		
 		// 연결 HttpClient 객체 생성
-		DefaultHttpClient client = new DefaultHttpClient();
+		HttpClient client = new DefaultHttpClient();
 		try {
 			// 객체 연결 설정 부분, 연결 시간, 데이터 대기 시간
 			HttpParams params = client.getParams();
-			HttpConnectionParams.setConnectionTimeout(params, util.POST_DELAY_TIME);
-			HttpConnectionParams.setSoTimeout(params, util.POST_DELAY_TIME);
+			HttpConnectionParams.setConnectionTimeout(params, util.CONNECT_DELAY_TIME);
+			HttpConnectionParams.setSoTimeout(params, util.CONNECT_DELAY_TIME);
 		 
 			// Post객체 생성
 			HttpPost httpPost = new HttpPost(URL);
@@ -72,8 +84,8 @@ public class RequestJson {
 		}
 	}
 	
-	public ArrayList<String> getInformationToRecommendListsJson (String responseData) {
-		responseData ="[" +responseData +"]" ;
+	public ArrayList<String> getRecommendLists (String responseData) {
+		responseData = responseData ;
 
 		Log.d (util.TAG, responseData) ;
 		return null ;
@@ -112,5 +124,62 @@ public class RequestJson {
 		} catch (Exception e) {
 			return null ;
 		}*/
+	}
+	
+	public void getRecommendLists (MakeJson json, URL url) {
+		
+		Log.d (util.TAG, json.keywordMakeJson()) ;
+		// URL Connection
+		try {
+			HttpURLConnection  httpConnection = (HttpURLConnection)url.openConnection () ;
+			// Server Connection Time
+			httpConnection.setConnectTimeout(util.CONNECT_DELAY_TIME);
+			// Data Read Time
+			httpConnection.setReadTimeout(util.READ_DELAY_TIME);
+			// Request Type
+			httpConnection.setRequestMethod(util.POST);
+			// 컨트롤 캐쉬 설정
+			httpConnection.setRequestProperty("Cache-Control", "no-cache");
+			// 타입설정(application/json) 형식으로 전송 (Request Body 전달시 application/json로 서버에 전달.)
+			httpConnection.setRequestProperty("Content-Type", "application/json");
+			/* Other type
+			httpConnection.setRequestProperty("Content-Type", "text/html");
+			httpConnection.setRequestProperty("Content-Type", "application/xml"); */
+			// Server Response JSON Type
+			httpConnection.setRequestProperty("Accept", "application/json");
+			/* Other type
+			 httpConnection.setRequestProperty("Accept", "application/xml"); */
+			// Request to OutputStream 
+			httpConnection.setDoOutput(true);
+			// Response to InputStream
+			httpConnection.setDoInput(true);
+			
+			// Request Body에 Data를 담기위해 OutputStream 객체를 생성.
+			OutputStream outStream = httpConnection.getOutputStream() ;
+			// Write Bytes
+			outStream.write(json.keywordMakeJson().getBytes()) ;
+			outStream.flush(); 
+			 
+			// Get ResponseCode
+			int responseCode = httpConnection.getResponseCode();
+			
+			// CODE == 200
+			if(responseCode == HttpURLConnection.HTTP_OK) {
+				
+				InputStream inStream = httpConnection.getInputStream() ;
+				ByteArrayOutputStream byteArrayOutStream = new ByteArrayOutputStream() ;
+				
+			    byte[] byteBuffer = new byte[1024];
+			    int length = 0;
+			    while((length = inStream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
+			    	byteArrayOutStream.write(byteBuffer, 0, length);
+			    }
+			     
+			    Log.d (util.TAG, new String(byteArrayOutStream.toByteArray()));
+			}
+			else Log.d (util.TAG, "Return Response Code Not 200") ;
+		} catch (IOException e) {
+			Log.e (util.TAG," IOException") ;
+		} catch (Exception e) {}
 	}
 }

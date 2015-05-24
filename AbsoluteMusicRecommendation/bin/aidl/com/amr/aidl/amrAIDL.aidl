@@ -2,8 +2,8 @@ package com.amr.aidl ;
 
 interface amrAIDL {
 	
-	boolean getAnalyzeToRecommendLists (String analyzeData) ;
+	boolean getAnalyzeToRecommendLists (String recvAction, String analyzeData, int count) ;
 	
-	boolean getInformationToRecommendLists (String artist, String title, String recvAction) ;
+	boolean getKeywordToRecommendLists (String recvAction, String artist, String title, int count) ;
 	
 }
