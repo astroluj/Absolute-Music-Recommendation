@@ -115,8 +115,8 @@ public class MainActivity extends Activity {
 					}
 					// Call AIDL
 					try {
-						aidlService.getInformationToRecommendLists("한반도", "어쩌란 말입니까",
-								MUSIC_RECOMMEND_RESPONSE) ;
+						aidlService.getKeywordToRecommendLists(MUSIC_RECOMMEND_RESPONSE,
+								"빅뱅", "Looser", 5) ;
 						isFirstPlayFlag = true ;
 					} catch (RemoteException e) {
 						e.printStackTrace();
