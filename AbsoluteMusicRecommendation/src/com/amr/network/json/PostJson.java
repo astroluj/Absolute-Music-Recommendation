@@ -1,25 +1,11 @@
 package com.amr.network.json;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.StringTokenizer;
- 
-
-
-
-
-
-
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -31,9 +17,6 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.amr.util.util;
 
@@ -62,7 +45,7 @@ public class PostJson {
     };
      
     // Get Post type list
-	public String sendData(ArrayList<BasicNameValuePair> post, String URL) throws ClientProtocolException, IOException {
+	public String sendData(ArrayList <BasicNameValuePair> jsonMsg, String url) {
 		
 		// 연결 HttpClient 객체 생성
 		HttpClient client = new DefaultHttpClient();
@@ -73,9 +56,18 @@ public class PostJson {
 			HttpConnectionParams.setSoTimeout(params, util.CONNECT_DELAY_TIME);
 		 
 			// Post객체 생성
-			HttpPost httpPost = new HttpPost(URL);
-			httpPost.setEntity(new UrlEncodedFormEntity (post, HTTP.UTF_8));
+			HttpPost httpPost = new HttpPost(url);
+			// Entity 설정
+			httpPost.setEntity(new UrlEncodedFormEntity (jsonMsg, HTTP.UTF_8));
+			// Header Setting
+			// 컨트롤 캐쉬 설정
+			httpPost.setHeader("Cache-Control", "no-cache");
+			// 타입설정(application/json) 형식으로 전송 (Request Body 전달시 application/json로 서버에 전달.)
+			httpPost.setHeader(HTTP.CONTENT_TYPE, "application/json");
+			// Server Response JSON Type
+			httpPost.setHeader("Accept", "application/json");
 			
+			Log.d (util.TAG, jsonMsg.toString()) ;
 			return client.execute(httpPost, responseHandler);
 		} catch (Exception e) {
 			if (client != null) client.getConnectionManager().shutdown() ;
@@ -124,62 +116,5 @@ public class PostJson {
 		} catch (Exception e) {
 			return null ;
 		}*/
-	}
-	
-	public void getRecommendLists (MakeJson json, URL url) {
-		
-		Log.d (util.TAG, json.keywordMakeJson()) ;
-		// URL Connection
-		try {
-			HttpURLConnection  httpConnection = (HttpURLConnection)url.openConnection () ;
-			// Server Connection Time
-			httpConnection.setConnectTimeout(util.CONNECT_DELAY_TIME);
-			// Data Read Time
-			httpConnection.setReadTimeout(util.READ_DELAY_TIME);
-			// Request Type
-			httpConnection.setRequestMethod(util.POST);
-			// 컨트롤 캐쉬 설정
-			httpConnection.setRequestProperty("Cache-Control", "no-cache");
-			// 타입설정(application/json) 형식으로 전송 (Request Body 전달시 application/json로 서버에 전달.)
-			httpConnection.setRequestProperty("Content-Type", "application/json");
-			/* Other type
-			httpConnection.setRequestProperty("Content-Type", "text/html");
-			httpConnection.setRequestProperty("Content-Type", "application/xml"); */
-			// Server Response JSON Type
-			httpConnection.setRequestProperty("Accept", "application/json");
-			/* Other type
-			 httpConnection.setRequestProperty("Accept", "application/xml"); */
-			// Request to OutputStream 
-			httpConnection.setDoOutput(true);
-			// Response to InputStream
-			httpConnection.setDoInput(true);
-			
-			// Request Body에 Data를 담기위해 OutputStream 객체를 생성.
-			OutputStream outStream = httpConnection.getOutputStream() ;
-			// Write Bytes
-			outStream.write(json.keywordMakeJson().getBytes()) ;
-			outStream.flush(); 
-			 
-			// Get ResponseCode
-			int responseCode = httpConnection.getResponseCode();
-			
-			// CODE == 200
-			if(responseCode == HttpURLConnection.HTTP_OK) {
-				
-				InputStream inStream = httpConnection.getInputStream() ;
-				ByteArrayOutputStream byteArrayOutStream = new ByteArrayOutputStream() ;
-				
-			    byte[] byteBuffer = new byte[1024];
-			    int length = 0;
-			    while((length = inStream.read(byteBuffer, 0, byteBuffer.length)) != -1) {
-			    	byteArrayOutStream.write(byteBuffer, 0, length);
-			    }
-			     
-			    Log.d (util.TAG, new String(byteArrayOutStream.toByteArray()));
-			}
-			else Log.d (util.TAG, "Return Response Code Not 200") ;
-		} catch (IOException e) {
-			Log.e (util.TAG," IOException") ;
-		} catch (Exception e) {}
 	}
 }

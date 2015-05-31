@@ -2,9 +2,10 @@ package com.amr.util;
 
 public class util {
 	// URLs
-	public final static String URL_SEARCH ="http://52.68.14.38/soundnerd/music/search" ;
-	public final static String URL_SIMILAR ="http://52.68.14.38/soundnerd/music/similar" ;
-	
+	public final static String URL_SEARCH = "http://52.68.14.38/soundnerd/music/search" ;
+	public final static String URL_SIMILAR = "http://52.68.14.38/soundnerd/music/similar" ;
+	public final static String URL_RECOMMEND = "http://52.68.14.38/soundnerd/music/recommend" ;
+	public final static String DATA = "data" ;
 	public final static String POST = "POST" ;
 
 	// JSON Keys
@@ -14,7 +15,7 @@ public class util {
 	public final static String COUNT = "count" ;
 	
 	// JSON Value
-	public final static int START_INDEX = 1 ;
+	public final static int START_INDEX = 0 ;
 	
 	// Log Tag
 	public final static String TAG = "AMR" ;
