@@ -1,18 +1,18 @@
 package com.amr.service;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
-import org.apache.http.message.BasicNameValuePair;
-
 import com.amr.aidl.amrAIDL;
+import com.amr.network.json.Paser;
 import com.amr.network.json.PostJson;
-import com.amr.util.MakeJson;
 import com.amr.util.util;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class AIDLService extends Service {
 
@@ -35,20 +35,33 @@ public class AIDLService extends Service {
 			public boolean getKeywordToRecommendLists (String recvAction, String artist,
 					String title, int count) throws RemoteException {
 				
+				try {
+					PostJson postJson = new PostJson () ;
+					
+					// Get Bonacell DB Track_ID
 					try {
-						ArrayList<BasicNameValuePair> jsonMsg = new ArrayList<BasicNameValuePair> () ; 
-						jsonMsg.add (new BasicNameValuePair(
-								util.DATA, MakeJson.keywordMakeJson(artist, title, util.START_INDEX, count))) ; 
+						// POST Request
+						Paser paser = postJson.getResponseArrays(
+								postJson.sendData(
+										postJson.postRequest(null, null,
+												artist, title,
+												util.START_INDEX, util.TRACK_ID_COUNT),
+												util.URL_SEARCH)).get(0) ;
 						
-						PostJson requestJson = new PostJson () ;
-						requestJson.getRecommendLists(
-								requestJson.sendData(jsonMsg, util.URL_SEARCH)) ;
+						ArrayList<Paser> paserArray = postJson.getResponseArrays(
+								postJson.sendData(
+										postJson.postRequest(null, paser.getTrackID(),
+												null, null, null, count), util.URL_RECOMMEND)) ;
 						
-						return true ;
-					} catch (Exception e) {
-						// return false is not exist music in Bonacell Server
-						return false;
+					} catch (NullPointerException e) {
+						// dis-exist in Bonacell DB
+						// feature 가능 하면 feature 추출
+						// 가능 못하면 DB에서 찾을 수 없다고 알림
 					}
+					return true ;
+				} catch (Exception e) {
+					return false ;
+				}
 			}
 		} ;
 	}

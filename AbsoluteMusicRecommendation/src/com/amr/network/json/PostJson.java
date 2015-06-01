@@ -22,28 +22,29 @@ import com.amr.util.util;
 
 import android.util.Log;
 
-public class PostJson {
+public class PostJson extends Json {
 
+	// Network Handler
 	private ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
- 
+		 
         @Override
         public String handleResponse(HttpResponse response) throws IOException {
  
             int status = response.getStatusLine().getStatusCode(); // HTTP 상태코드         
                          
-            if (status == HttpStatus.SC_OK) { // 200 인경우 성공
-                HttpEntity entity = response.getEntity();
-                
-                return entity != null ?EntityUtils.toString(entity) : null ;
-            } else {
+            if (status == HttpStatus.SC_OK)  // 200 인경우 성공
+                return response.getEntity() != null ? EntityUtils.toString(response.getEntity()) : null ;
+            else {
                 ClientProtocolException e = new ClientProtocolException("Unexpected response status: " + status);
                 throw e; // 상태코드 200이 아닌경우 예외발생
             }
- 
         }
-         
     };
-     
+	
+    public PostJson () {
+    	super () ;
+    }
+    
     // Get Post type list
 	public String sendData(ArrayList <BasicNameValuePair> jsonMsg, String url) {
 		
@@ -63,11 +64,10 @@ public class PostJson {
 			// 컨트롤 캐쉬 설정
 			httpPost.setHeader("Cache-Control", "no-cache");
 			// 타입설정(application/json) 형식으로 전송 (Request Body 전달시 application/json로 서버에 전달.)
-			httpPost.setHeader(HTTP.CONTENT_TYPE, "application/json");
+			//httpPost.setHeader(HTTP.CONTENT_TYPE, "application/json");
 			// Server Response JSON Type
 			httpPost.setHeader("Accept", "application/json");
 			
-			Log.d (util.TAG, jsonMsg.toString()) ;
 			return client.execute(httpPost, responseHandler);
 		} catch (Exception e) {
 			if (client != null) client.getConnectionManager().shutdown() ;
@@ -76,45 +76,30 @@ public class PostJson {
 		}
 	}
 	
-	public ArrayList<String> getRecommendLists (String responseData) {
-		responseData = responseData ;
-
-		Log.d (util.TAG, responseData) ;
-		return null ;
-		/*‘track_id’: <track_id string>,
-		‘artist’: <string>,
-		‘title’: <string>,
-		‘url’: <string>
+	public ArrayList <BasicNameValuePair> postRequest (String feature, String track_id,
+			String artist, String title, 
+			Object startIndex, Object count) {
+		
 		try {
-			JSONArray jsonArray =new JSONArray(responseData) ;
-			for (int i =0 ; i < jsonArray.length() ; i++) {
-				JSONObject body1 =jsonArray.getJSONObject(i) ;
-				if (body1 != null) {
-					JSONObject body2 =body1.getJSONObject("body") ;
-					if (body2 != null) {
-						JSONObject body3 =body2.getJSONObject("body") ;
-						if (body3 != null) {
-							JSONObject authUse =body3.getJSONObject("result") ;
-							if (authUse != null) {
-								StringTokenizer token =new StringTokenizer(authUse.getString("RESULT"), SPLIT) ;
-								ArrayList<String> response =new ArrayList<String> () ;
-								while (token.hasMoreTokens()) response.add(token.nextToken()) ;
-								
-								return response ;
-							}
-						}
-					}
-				}
-			}
+			ArrayList<BasicNameValuePair> jsonMsg = new ArrayList<BasicNameValuePair> () ; 
 			
-			return null ;
-		} catch (JSONException e) {
-			e.printStackTrace() ;
-			Log.e ("JSON Exception", "responseData html or xml") ;
+			jsonMsg.add (new BasicNameValuePair(util.DATA, 
+					this.searchMakeJson(feature, track_id, artist, title, 
+							startIndex, count))) ; 
 			
-			return null ;
+			Log.d (util.TAG + util.POST + ": ", jsonMsg.toString()) ;
+			
+			return jsonMsg ;
 		} catch (Exception e) {
 			return null ;
-		}*/
+		}
+	}
+	
+	// Json Paser
+	public ArrayList<Paser> getResponseArrays (String responseMsg) {
+
+		Log.d (util.TAG + "Response : " , responseMsg) ;
+		
+		return this.responsePaser(responseMsg) ;
 	}
 }
