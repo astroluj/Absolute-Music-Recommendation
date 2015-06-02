@@ -15,7 +15,7 @@ import com.amr.util.util;
 import android.content.ContentValues;
 import android.util.Log;
 
-public class PostJson extends Json {
+public class PostJson extends ControllJson {
 
     public PostJson () {
     	super () ;
@@ -123,7 +123,7 @@ public class PostJson extends Json {
 	}
 	
 	// Json Paser
-	public ArrayList<Paser> getResponseArrays (String responseMsg) {
+	public ArrayList<ResponsePaserData> getResponseArrays (String responseMsg) {
 
 		Log.d (util.TAG + "Response : " , responseMsg) ;
 		

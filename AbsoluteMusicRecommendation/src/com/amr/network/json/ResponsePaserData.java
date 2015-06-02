@@ -1,10 +1,26 @@
 package com.amr.network.json;
 
-public class Paser {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ResponsePaserData implements Parcelable {
 
 	private String track_id, artist, title, album, url, score  ;
 	
-	public Paser  () {
+	public static final Parcelable.Creator<ResponsePaserData> CREATOR = new Parcelable.Creator<ResponsePaserData> () {
+
+		@Override
+		public ResponsePaserData createFromParcel(Parcel source) {
+			return new ResponsePaserData (source) ;
+		}
+
+		@Override
+		public ResponsePaserData[] newArray(int size) {
+			return new ResponsePaserData[size] ;
+		}
+	} ;
+	
+	public ResponsePaserData  () {
 		// String
 		track_id = "" ;
 		artist = "" ;
@@ -14,6 +30,18 @@ public class Paser {
 		
 		// Float .2f
 		score = "" ;
+	}
+	
+	public ResponsePaserData (Parcel source) {
+		// String
+		this.track_id = source.readString() ;
+		this.artist = source.readString() ;
+		this.title = source.readString() ;
+		this.album = source.readString() ;
+		this.url = source.readString() ;
+		
+		// Float .2f
+		this.score = source.readString() ;
 	}
 	
 	// Get track_id
@@ -72,5 +100,22 @@ public class Paser {
 		} catch (NullPointerException e) {
 			this.score =  score ;
 		} 
+	}
+
+	@Override
+	// Override Type alert
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+
+		dest.writeString(this.track_id) ;
+		dest.writeString(this.artist) ;
+		dest.writeString(this.title) ;
+		dest.writeString(this.album) ;
+		dest.writeString(this.url) ;
+		dest.writeString(this.score) ;
 	}
 }

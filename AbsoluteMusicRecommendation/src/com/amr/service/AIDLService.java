@@ -3,7 +3,7 @@ package com.amr.service;
 import java.util.ArrayList;
 
 import com.amr.aidl.amrAIDL;
-import com.amr.network.json.Paser;
+import com.amr.network.json.ResponsePaserData;
 import com.amr.network.json.PostJson;
 import com.amr.util.util;
 
@@ -11,6 +11,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class AIDLService extends Service {
 
@@ -39,24 +40,33 @@ public class AIDLService extends Service {
 					// Get Bonacell DB Track_ID
 					try {
 						// POST Request
-						Paser paser = postJson.getResponseArrays(
+						ResponsePaserData ResponsePaserData = postJson.getResponseArrays(
 								postJson.sendData(
 										postJson.postRequest(null, null,
 												artist, title,
 												util.START_INDEX, util.TRACK_ID_COUNT),
 												util.URL_SEARCH)).get(0) ;
 						
-						ArrayList<Paser> paserArray = postJson.getResponseArrays(
+						// Recommend Lists
+						ArrayList<ResponsePaserData> ResponsePaserDataArray = postJson.getResponseArrays(
 								postJson.sendData(
-										postJson.postRequest(null, paser.getTrackID(),
+										postJson.postRequest(null, ResponsePaserData.getTrackID(),
 												null, null, null, count), util.URL_RECOMMEND)) ;
+
+						// Send BroadCast Recommend Lists
+						Intent intent = new Intent (recvAction) ;
+						intent.putParcelableArrayListExtra(util.AMR, ResponsePaserDataArray) ;
+						sendBroadcast(intent);
+						Log.d (util.TAG + "SendBraodCast : ", "Search Recommend Lists") ;
 						
+						return true ;
 					} catch (NullPointerException e) {
 						// dis-exist in Bonacell DB
 						// feature 가능 하면 feature 추출
 						// 가능 못하면 DB에서 찾을 수 없다고 알림
+						
+						return false ;
 					}
-					return true ;
 				} catch (Exception e) {
 					return false ;
 				}

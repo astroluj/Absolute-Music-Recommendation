@@ -1,15 +1,18 @@
 package com.amr.util;
 
 public class util {
+	// BroadCast keys
+	public final static String AMR = "AMR Recommend List" ;
+	
 	// URLs
 	public final static String URL_SEARCH = "http://52.68.14.38/soundnerd/music/search" ;
 	public final static String URL_SIMILAR = "http://52.68.14.38/soundnerd/music/similar" ;
 	public final static String URL_RECOMMEND = "http://52.68.14.38/soundnerd/music/recommend" ;
-	public final static String DATA = "data" ;
 	public final static String POST = "POST" ;
 	public final static String UTF_8 = "UTF-8" ;
 	
 	// Paser Keys and JSON Keys
+	public final static String DATA = "data" ;
 	public final static String TRACKS = "tracks" ;
 	public final static String FEATURE = "feature" ;
 	public final static String ARTIST = "artist" ;

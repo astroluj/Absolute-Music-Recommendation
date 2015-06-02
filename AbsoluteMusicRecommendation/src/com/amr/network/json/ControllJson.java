@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import com.amr.util.util;
 
-public class Json {
+public class ControllJson {
 
 	// Music/Search Json
 	protected String searchMakeJson (String feature, String track_id,
@@ -50,11 +50,11 @@ public class Json {
 	// Music/Recommend Json
 	
 	// Paser
-	protected ArrayList<Paser> responsePaser (String responseMsg) {
+	protected ArrayList<ResponsePaserData> responsePaser (String responseMsg) {
 		
 		try {
 			// Init Response message Keys containers
-			ArrayList<Paser> paserArray = new ArrayList<Paser> () ;
+			ArrayList<ResponsePaserData> paserArray = new ArrayList<ResponsePaserData> () ;
 			
 			JSONObject jsonObject = new JSONObject(responseMsg) ;
 			JSONArray jsonArray = jsonObject.getJSONArray(util.TRACKS) ;
@@ -63,47 +63,47 @@ public class Json {
 				
 				JSONObject paserData = jsonArray.getJSONObject(i) ;
 				
-				Paser paser = new Paser () ;
+				ResponsePaserData ResponsePaserData = new ResponsePaserData () ;
 				
 				// Keys Paser
 				try {
-					paser.setTrackID(paserData.getString(util.TRACK_ID)) ;
+					ResponsePaserData.setTrackID(paserData.getString(util.TRACK_ID)) ;
 				} catch (JSONException e) {
-					paser.setTrackID(null) ;
+					ResponsePaserData.setTrackID(null) ;
 				}
 				
 				try {
-					paser.setArtist(paserData.getString(util.ARTIST)) ;
+					ResponsePaserData.setArtist(paserData.getString(util.ARTIST)) ;
 				} catch (JSONException e) {
-					paser.setArtist(null) ;
+					ResponsePaserData.setArtist(null) ;
 				}
 				
 				try {
-					paser.setTitle(paserData.getString(util.TITLE)) ;
+					ResponsePaserData.setTitle(paserData.getString(util.TITLE)) ;
 				} catch (JSONException e) {
-					paser.setTitle(null) ;
+					ResponsePaserData.setTitle(null) ;
 				}
 				
 				try {
-					paser.setAlbum(paserData.getString(util.ALBUM)) ;
+					ResponsePaserData.setAlbum(paserData.getString(util.ALBUM)) ;
 				} catch (JSONException e) {
-					paser.setAlbum(null) ;
+					ResponsePaserData.setAlbum(null) ;
 				}
 				
 				try {
-					paser.setURL(paserData.getString(util.URL)) ;
+					ResponsePaserData.setURL(paserData.getString(util.URL)) ;
 				} catch (JSONException e) {
-					paser.setURL(null) ;
+					ResponsePaserData.setURL(null) ;
 				}
 				
 				try {
-					paser.setScore(paserData.getString(util.SCORE)) ;
+					ResponsePaserData.setScore(paserData.getString(util.SCORE)) ;
 				} catch (JSONException e) {
-					paser.setScore(null) ;
+					ResponsePaserData.setScore(null) ;
 				}
 				
 				// add Pasing Datas
-				paserArray.add(paser) ;
+				paserArray.add(ResponsePaserData) ;
 			}
 			
 			return paserArray ;

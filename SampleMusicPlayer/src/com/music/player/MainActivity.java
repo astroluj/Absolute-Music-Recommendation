@@ -1,6 +1,9 @@
 package com.music.player;
 
+import java.util.ArrayList;
+
 import com.amr.aidl.amrAIDL;
+import com.amr.network.json.ResponsePaserData;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -138,14 +141,13 @@ public class MainActivity extends Activity {
 	// Catch Recommendation list on Intent Action 
 	private class RecommendationReciever extends BroadcastReceiver {
 		public void onReceive(Context context, Intent intent) {
-
 			// Check Action
 			if (intent.getAction().equals(MUSIC_RECOMMEND_RESPONSE)) {
 				// Push shows music list
-				String lists[] = intent.getStringArrayExtra("lists") ;
+				ArrayList<ResponsePaserData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
 				// Debug lists
-				for (String list : lists)
-					Log.d (TAG, list) ;
+				for (int i = 0 ; i < lists.size() ; i++)
+					Log.d (TAG, lists.get(i).getArtist() + lists.get(i).getTitle() + lists.get(i).getScore()) ;
 				
 				unregisterReceiver () ;
 			}
