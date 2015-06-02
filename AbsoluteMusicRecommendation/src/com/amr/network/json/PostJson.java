@@ -118,6 +118,8 @@ public class PostJson extends ControllJson {
 			
 			return jsonMsg ;
 		} catch (Exception e) {
+			e.printStackTrace();
+			
 			return null ;
 		}
 	}

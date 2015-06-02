@@ -14,6 +14,7 @@ import android.util.Log;
 public class NetworkThread extends Thread {
 
 	private PostJson postJson ;
+	private ArrayList<ResponsePaserData> ResponsePaserDataArray ;
 	
 	private Context context ;
 	private Handler handler ;
@@ -49,9 +50,9 @@ public class NetworkThread extends Thread {
 										artist, title,
 										util.START_INDEX, util.TRACK_ID_COUNT),
 										util.URL_SEARCH)).get(0) ;
-				
+
 				// Recommend Lists
-				ArrayList<ResponsePaserData> ResponsePaserDataArray = postJson.getResponseArrays(
+				ResponsePaserDataArray = postJson.getResponseArrays(
 						postJson.sendData(
 								postJson.postRequest(null, ResponsePaserData.getTrackID(),
 										null, null, null, count), util.URL_RECOMMEND)) ;
@@ -63,11 +64,22 @@ public class NetworkThread extends Thread {
 				Log.d (util.TAG + "SendBraodCast : ", "Search Recommend Lists") ;
 				
 				handler.sendEmptyMessage(util.SEND_RECOMMEND_LIST) ;
-			} catch (NullPointerException e) {
+			} catch (IndexOutOfBoundsException e) {
 				// dis-exist in Bonacell DB
 				// feature 가능 하면 feature 추출
+				if (false) {
+				}
 				// 가능 못하면 DB에서 찾을 수 없다고 알림
+				else {
+					// Send BroadCast Not found Lists
+					Intent intent = new Intent (recvAction) ;
+					intent.putParcelableArrayListExtra(util.AMR, ResponsePaserDataArray) ;
+					context.sendBroadcast(intent);
+					Log.d (util.TAG + "SendBraodCast : ", "Not found Recommend Lists") ;
+				}
 			}
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

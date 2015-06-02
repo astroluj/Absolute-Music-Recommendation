@@ -6,7 +6,6 @@ import com.amr.aidl.amrAIDL;
 import com.amr.network.json.ResponsePaserData;
 
 import android.app.Activity;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -128,7 +127,7 @@ public class MainActivity extends Activity {
 					// Call AIDL
 					try {
 						aidlService.getKeywordToRecommendLists(MUSIC_RECOMMEND_RESPONSE,
-								"EXID", "위아래", 5) ;
+								"백뱅", "Looser", 5) ;
 						isFirstPlayFlag = true ;
 					} catch (RemoteException e) {
 						e.printStackTrace();
@@ -153,9 +152,6 @@ public class MainActivity extends Activity {
 			// Check Action
 			if (intent.getAction().equals(MUSIC_RECOMMEND_RESPONSE)) {
 				// Push shows music list
-				ArrayList<ResponsePaserData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
-				// Debug lists
-				
 				// Notification Alert
 				// Release previous notification
 				if (notiBuilder != null) {
@@ -174,7 +170,13 @@ public class MainActivity extends Activity {
 				notiBuilder.setAutoCancel(true) ;
 				
 				// API < API 11
-				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+				ArrayList<ResponsePaserData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
+				// Debug lists
+				if (lists == null || lists.size() == 0) {
+					
+					notiBuilder.setContentText("비슷한 음악을 찾을 수 없습니다.") ;
+				}
+				else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
 					String contentText = "" ;
 					
 					for (ResponsePaserData list : lists) {

@@ -39,6 +39,7 @@ public class AIDLService extends Service {
 					startNetworkThread(recvAction, artist, title, count) ;
 					
 				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		} ;
@@ -65,6 +66,7 @@ public class AIDLService extends Service {
 		try {
 			networkThread.interrupt() ;
 		} catch (Exception e) {
+			e.printStackTrace() ;
 			networkThread = null ;
 		}
 	}
@@ -77,21 +79,27 @@ public class AIDLService extends Service {
 				try {
 					
 					releaseNetworkThread() ;
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				
 				break ;
 				
 			case util.CALL_FEATURE :
 				try {
 					
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				
 				break ;
 				
 			case util.NOT_FOUND_RECOMMEND :
 				try {
 					
-				} catch (Exception e) {}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				
 				break ;
 			}
