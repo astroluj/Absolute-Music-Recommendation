@@ -1,6 +1,5 @@
 package com.amr.service;
 
-import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import com.amr.aidl.amrAIDL;
@@ -12,7 +11,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 public class AIDLService extends Service {
 

@@ -1,7 +1,5 @@
 package com.amr.network.json;
 
-import android.util.Log;
-
 public class Paser {
 
 	private String track_id, artist, title, album, url, score  ;
