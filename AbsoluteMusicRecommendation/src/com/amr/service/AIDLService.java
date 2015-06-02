@@ -1,21 +1,23 @@
 package com.amr.service;
 
-import java.util.ArrayList;
 
 import com.amr.aidl.amrAIDL;
-import com.amr.network.json.ResponsePaserData;
-import com.amr.network.json.PostJson;
+import com.amr.thread.NetworkThread;
 import com.amr.util.util;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
-import android.util.Log;
 
 public class AIDLService extends Service {
 
 	amrAIDL.Stub amrService  ;	// AIDLService
+	
+	private NetworkThread networkThread ;
+	private Handler networkHandlerCallback = new Handler (new NetworkHandlerCallback()) ;
 	
 	public void onCreate () {
 		super.onCreate () ;
@@ -25,50 +27,18 @@ public class AIDLService extends Service {
 
 			@Override
 			// Client Analyzation music
-			public boolean getAnalyzeToRecommendLists (String recvAction, String analyzeData, int count) throws RemoteException {
-				return false;
+			public void getAnalyzeToRecommendLists (String recvAction, String analyzeData, int count) throws RemoteException {
 			}
 
 			// Keyword Searching
 			@Override
-			public boolean getKeywordToRecommendLists (String recvAction, String artist,
+			public void getKeywordToRecommendLists (String recvAction, String artist,
 					String title, int count) throws RemoteException {
 				
 				try {
-					PostJson postJson = new PostJson () ;
+					startNetworkThread(recvAction, artist, title, count) ;
 					
-					// Get Bonacell DB Track_ID
-					try {
-						// POST Request
-						ResponsePaserData ResponsePaserData = postJson.getResponseArrays(
-								postJson.sendData(
-										postJson.postRequest(null, null,
-												artist, title,
-												util.START_INDEX, util.TRACK_ID_COUNT),
-												util.URL_SEARCH)).get(0) ;
-						
-						// Recommend Lists
-						ArrayList<ResponsePaserData> ResponsePaserDataArray = postJson.getResponseArrays(
-								postJson.sendData(
-										postJson.postRequest(null, ResponsePaserData.getTrackID(),
-												null, null, null, count), util.URL_RECOMMEND)) ;
-
-						// Send BroadCast Recommend Lists
-						Intent intent = new Intent (recvAction) ;
-						intent.putParcelableArrayListExtra(util.AMR, ResponsePaserDataArray) ;
-						sendBroadcast(intent);
-						Log.d (util.TAG + "SendBraodCast : ", "Search Recommend Lists") ;
-						
-						return true ;
-					} catch (NullPointerException e) {
-						// dis-exist in Bonacell DB
-						// feature 가능 하면 feature 추출
-						// 가능 못하면 DB에서 찾을 수 없다고 알림
-						
-						return false ;
-					}
 				} catch (Exception e) {
-					return false ;
 				}
 			}
 		} ;
@@ -83,4 +53,50 @@ public class AIDLService extends Service {
 		super.onDestroy() ;
 	}
 
+	private void startNetworkThread (String recvAction, String artist, String title, int count) {
+		networkThread =new NetworkThread (getApplicationContext(), networkHandlerCallback,
+				recvAction, artist, title, count) ;
+		
+		networkThread.setDaemon(true) ;
+		networkThread.start() ;
+	}
+	
+	private void releaseNetworkThread () {
+		try {
+			networkThread.interrupt() ;
+		} catch (Exception e) {
+			networkThread = null ;
+		}
+	}
+	
+	private class NetworkHandlerCallback implements Handler.Callback {
+		public boolean handleMessage (Message msg) {
+			 
+			switch (msg.what) {
+			case util.SEND_RECOMMEND_LIST : 
+				try {
+					
+					releaseNetworkThread() ;
+				} catch (Exception e) {}
+				
+				break ;
+				
+			case util.CALL_FEATURE :
+				try {
+					
+				} catch (Exception e) {}
+				
+				break ;
+				
+			case util.NOT_FOUND_RECOMMEND :
+				try {
+					
+				} catch (Exception e) {}
+				
+				break ;
+			}
+			
+			return true ;
+		}
+	}
 }

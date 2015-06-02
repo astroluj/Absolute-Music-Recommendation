@@ -1,6 +1,11 @@
 package com.amr.util;
 
 public class util {
+	// NetworkHandler Names
+	public final static int CALL_FEATURE  = 1 ;
+	public final static int SEND_RECOMMEND_LIST = 0 ;
+	public final static int NOT_FOUND_RECOMMEND = 2 ;
+	
 	// BroadCast keys
 	public final static String AMR = "AMR Recommend List" ;
 	
@@ -34,5 +39,7 @@ public class util {
 	// Times
 	public final static int CONNECT_DELAY_TIME = 5000 ;
 	public final static int READ_DELAY_TIME = 5000 ;
+	
+	public final static long SLEEP = 100 ;
 	
 }

@@ -33,10 +33,10 @@ public class ControllJson {
 				jsonObject.put(util.TITLE, title) ;
 			
 			if (startIndex != null) 
-				jsonObject.put(util.START, (int)startIndex) ;
+				jsonObject.put(util.START, (Integer)startIndex) ;
 			
 			if (count != null)
-				jsonObject.put(util.COUNT, (int)count) ;
+				jsonObject.put(util.COUNT, (Integer)count) ;
 
 			jsonMsg = jsonObject.toString() ;
 		} catch (JSONException e) {
