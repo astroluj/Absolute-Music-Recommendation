@@ -6,17 +6,23 @@ import com.amr.aidl.amrAIDL;
 import com.amr.network.json.ResponsePaserData;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -27,13 +33,15 @@ public class MainActivity extends Activity {
 	private final String TAG = "Sample Music Player :" ;
 	private final long INTERVAL = 1000 ;
 	private final String MUSIC_RECOMMEND_RESPONSE = "com.music.player.response" ;
-	
 	private RecommendationReciever recommedRecv ;
 	
 	// AIDL
 	amrAIDL aidlService;
 	ServiceConnection serviceConn;
-		
+	
+	private NotificationManager notiManager ;
+	private NotificationCompat.Builder notiBuilder ;
+	private NotificationCompat.InboxStyle inboxStyle ;
 	private MediaPlayer mediaPlayer ;
 	private SeekBar musicSeekbar;
 	private ImageButton playBtn ;
@@ -64,11 +72,12 @@ public class MainActivity extends Activity {
 				
 		//initialize views
 		initializes();
-		
-		
 	}
 	
 	public void initializes(){
+		// Notification Manager
+		notiManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE) ;
+				
 		// Music Player
 		mediaPlayer = MediaPlayer.create(this, R.raw.sample);
 		songDuration = mediaPlayer.getDuration() ;
@@ -146,10 +155,50 @@ public class MainActivity extends Activity {
 				// Push shows music list
 				ArrayList<ResponsePaserData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
 				// Debug lists
-				for (int i = 0 ; i < lists.size() ; i++)
-					Log.d (TAG, lists.get(i).getArtist() + lists.get(i).getTitle() + lists.get(i).getScore()) ;
 				
-				unregisterReceiver () ;
+				// Notification Alert
+				// Release previous notification
+				if (notiBuilder != null) {
+					notiManager.cancel(0) ;
+					inboxStyle = null ;
+					notiBuilder = null ;
+				}
+				
+				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
+				notiBuilder = new NotificationCompat.Builder(getApplicationContext()) ;
+				notiBuilder.setContentTitle("추천 리스트") ;
+				notiBuilder.setSmallIcon(R.drawable.equalizer) ;
+				notiBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.equalizer)) ;
+				notiBuilder.setTicker("추천 음악") ;
+				notiBuilder.setContentIntent(pendingIntent) ;
+				notiBuilder.setAutoCancel(true) ;
+				
+				// API < API 11
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+					String contentText = "" ;
+					
+					for (ResponsePaserData list : lists) {
+						contentText += "Artist : " + list.getArtist() ;
+						if (list.getAlbum() != null) contentText += " Album : " + list.getAlbum() ;
+						contentText += " Title : " + list.getTitle() + "\n" ;
+						
+					}
+					notiBuilder.setContentText(contentText) ;
+				}
+				else {
+					// Inbox Style Set
+					inboxStyle = new NotificationCompat.InboxStyle(notiBuilder) ;
+					for (ResponsePaserData list : lists) {
+						String contentText = "" ;
+						contentText += "Artist : " + list.getArtist() ;
+						if (list.getAlbum() != null) contentText += " Album : " + list.getAlbum() ;
+						contentText += " Title : " + list.getTitle() ;
+						
+						inboxStyle.addLine(contentText) ;
+					}
+				}
+				// Show notification
+				notiManager.notify(0, notiBuilder.build()) ;
 			}
 		}
 	}
