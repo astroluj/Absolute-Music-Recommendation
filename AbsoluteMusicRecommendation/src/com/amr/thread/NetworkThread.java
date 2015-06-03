@@ -2,10 +2,10 @@ package com.amr.thread;
 
 import java.util.ArrayList;
 
+import com.amr.data.AMRRecommendRequestData;
+import com.amr.data.AMRRecommendResponseData;
 import com.amr.network.json.PostJson;
 import com.amr.util.util;
-import com.arm.data.AMRData;
-import com.arm.data.RecommendData;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +15,7 @@ import android.util.Log;
 public class NetworkThread extends Thread {
 
 	private PostJson postJson ;
-	private ArrayList<RecommendData> responsePaserDataArray ;
+	private ArrayList<AMRRecommendResponseData> responsePaserDataArray ;
 	
 	private Context context ;
 	private Handler handler ;
@@ -24,7 +24,7 @@ public class NetworkThread extends Thread {
 	private Integer startIndex, count ;
 	
 	public NetworkThread (Context context, Handler handler,
-			String recvAction, AMRData amrData) {
+			String recvAction, AMRRecommendRequestData amrData) {
 		
 		this.postJson = new PostJson () ;
 		
@@ -72,9 +72,9 @@ public class NetworkThread extends Thread {
 				// /music/search and /music/recommend Request
 				if (feature == null) {
 					// /music/search
-					RecommendData responsePaserData = postJson.getResponseArrays(
+					AMRRecommendResponseData responsePaserData = postJson.getResponseArrays(
 							postJson.sendData(
-									postJson.postRequest(new AMRData(null, null,
+									postJson.postRequest(new AMRRecommendRequestData(null, null,
 											artist, title,
 											startIndex, util.TRACK_ID_COUNT)),
 											util.URL_SEARCH)).get(0) ;
@@ -83,7 +83,7 @@ public class NetworkThread extends Thread {
 					// /music/recommend
 					responsePaserDataArray = postJson.getResponseArrays(
 							postJson.sendData(
-									postJson.postRequest(new AMRData (null, responsePaserData.getTrackID(),
+									postJson.postRequest(new AMRRecommendRequestData (null, responsePaserData.getTrackID(),
 											null, null,
 											null, count)), util.URL_RECOMMEND)) ;
 				}
@@ -92,7 +92,7 @@ public class NetworkThread extends Thread {
 					// /music/similar
 					responsePaserDataArray = postJson.getResponseArrays(
 							postJson.sendData(
-									postJson.postRequest(new AMRData (feature, null,
+									postJson.postRequest(new AMRRecommendRequestData (feature, null,
 											null, null,
 											null, count)), util.URL_SIMILAR)) ;
 				}
@@ -121,7 +121,7 @@ public class NetworkThread extends Thread {
 		}
 	}
 	
-	private void sendBroadCast (String recvAction, ArrayList<RecommendData> responsePaserDataArray) {
+	private void sendBroadCast (String recvAction, ArrayList<AMRRecommendResponseData> responsePaserDataArray) {
 		
 		Intent intent = new Intent (recvAction) ;
 		intent.putParcelableArrayListExtra(util.AMR, responsePaserDataArray) ;

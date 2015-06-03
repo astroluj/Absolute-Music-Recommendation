@@ -1,12 +1,12 @@
-package com.arm.data;
+package com.amr.data;
 
-public class AMRData {
+public class AMRRecommendRequestData {
 
 	private String feature, track_id, artist, title ;
 	private Integer startIndex, count ;
 	
 	// Constructor
-	public AMRData () {
+	public AMRRecommendRequestData () {
 		
 		// String
 		this.feature = "" ;
@@ -19,7 +19,7 @@ public class AMRData {
 		this.count = 0 ;
 	}
 	
-	public AMRData (String feature, String track_id, String artist, String title,
+	public AMRRecommendRequestData (String feature, String track_id, String artist, String title,
 			Integer startIndex, Integer count) {
 		// String
 		this.feature = feature ;
@@ -32,7 +32,7 @@ public class AMRData {
 		this.count = count ;
 	}
 	
-	public AMRData (AMRData amrData) {
+	public AMRRecommendRequestData (AMRRecommendRequestData amrData) {
 		// String
 		this.feature = amrData.getFeature() ;
 		this.track_id =  amrData.getTrackID() ;

@@ -2,9 +2,9 @@ package com.amr.service;
 
 
 import com.amr.aidl.amrAIDL;
+import com.amr.data.AMRRecommendRequestData;
 import com.amr.thread.NetworkThread;
 import com.amr.util.util;
-import com.arm.data.AMRData;
 
 import android.app.Service;
 import android.content.Intent;
@@ -34,7 +34,7 @@ public class AIDLService extends Service {
 				// 주어진 mediaPath를 통하여 음악의 Feature 구하기
 				String feature = null ;
 				try {
-					startNetworkThread(recvAction, new AMRData (feature, null, null, null, null, count)) ;
+					startNetworkThread(recvAction, new AMRRecommendRequestData (feature, null, null, null, null, count)) ;
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -46,7 +46,7 @@ public class AIDLService extends Service {
 			public void getKeywordToRecommendLists (String recvAction, String artist, String title, int count) throws RemoteException {
 
 				try {
-					startNetworkThread(recvAction, new AMRData (null, null, artist, title, util.START_INDEX, count)) ;
+					startNetworkThread(recvAction, new AMRRecommendRequestData (null, null, artist, title, util.START_INDEX, count)) ;
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -65,7 +65,7 @@ public class AIDLService extends Service {
 	}
 
 	// NetworkThread Create & Release
-	private void startNetworkThread (String recvAction, AMRData amrData) {
+	private void startNetworkThread (String recvAction, AMRRecommendRequestData amrData) {
 		networkThread =new NetworkThread (getApplicationContext(), networkHandlerCallback,
 				recvAction, amrData) ;
 		
@@ -98,9 +98,9 @@ public class AIDLService extends Service {
 				
 				break ;
 				
-			case util.CALL_FEATURE :
+			case util.ANALYZE_FEATURE :
 				try {
-					Log.d (util.TAG + "Handler Come : ", "CALL_FEATURE") ;
+					Log.d (util.TAG + "Handler Come : ", "ANALYZE_FEATURE") ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

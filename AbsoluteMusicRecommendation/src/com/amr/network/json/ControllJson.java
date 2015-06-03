@@ -6,9 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.amr.data.AMRRecommendRequestData;
+import com.amr.data.AMRRecommendResponseData;
 import com.amr.util.util;
-import com.arm.data.AMRData;
-import com.arm.data.RecommendData;
 
 public class ControllJson {
 
@@ -50,7 +50,7 @@ public class ControllJson {
 		return jsonMsg ;
 	}
 	
-	protected String makeJson (AMRData amrData) {
+	protected String makeJson (AMRRecommendRequestData amrData) {
 		
 		String jsonMsg = "" ;
 		
@@ -84,11 +84,11 @@ public class ControllJson {
 	}
 	
 	// Paser
-	protected ArrayList<RecommendData> responsePaser (String responseMsg) {
+	protected ArrayList<AMRRecommendResponseData> responsePaser (String responseMsg) {
 		
 		try {
 			// Init Response message Keys containers
-			ArrayList<RecommendData> paserArray = new ArrayList<RecommendData> () ;
+			ArrayList<AMRRecommendResponseData> paserArray = new ArrayList<AMRRecommendResponseData> () ;
 			
 			JSONObject jsonObject = new JSONObject(responseMsg) ;
 			JSONArray jsonArray = jsonObject.getJSONArray(util.TRACKS) ;
@@ -97,7 +97,7 @@ public class ControllJson {
 				
 				JSONObject paserData = jsonArray.getJSONObject(i) ;
 				
-				RecommendData ResponsePaserData = new RecommendData () ;
+				AMRRecommendResponseData ResponsePaserData = new AMRRecommendResponseData () ;
 				
 				// Keys Paser
 				try {

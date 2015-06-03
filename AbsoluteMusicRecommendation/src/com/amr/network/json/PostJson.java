@@ -10,9 +10,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import com.amr.data.AMRRecommendRequestData;
+import com.amr.data.AMRRecommendResponseData;
 import com.amr.util.util;
-import com.arm.data.AMRData;
-import com.arm.data.RecommendData;
 
 import android.content.ContentValues;
 import android.util.Log;
@@ -107,7 +107,7 @@ public class PostJson extends ControllJson {
 		}
 	}
 	
-	public ContentValues postRequest (AMRData amrData) {
+	public ContentValues postRequest (AMRRecommendRequestData amrData) {
 		
 		try {
 			ContentValues jsonMsg = new ContentValues () ;
@@ -124,7 +124,7 @@ public class PostJson extends ControllJson {
 	}
 	
 	// Json Paser
-	public ArrayList<RecommendData> getResponseArrays (String responseMsg) {
+	public ArrayList<AMRRecommendResponseData> getResponseArrays (String responseMsg) {
 
 		Log.d (util.TAG + "Response : " , responseMsg) ;
 		

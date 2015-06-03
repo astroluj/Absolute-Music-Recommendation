@@ -1,27 +1,27 @@
-package com.arm.data;
+package com.amr.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class RecommendData implements Parcelable {
+public class AMRRecommendResponseData implements Parcelable {
 
 	private String track_id, artist, title, album, url, score  ;
 	
-	public static final Parcelable.Creator<RecommendData> CREATOR = new Parcelable.Creator<RecommendData> () {
+	public static final Parcelable.Creator<AMRRecommendResponseData> CREATOR = new Parcelable.Creator<AMRRecommendResponseData> () {
 
 		@Override
-		public RecommendData createFromParcel(Parcel source) {
-			return new RecommendData (source) ;
+		public AMRRecommendResponseData createFromParcel(Parcel source) {
+			return new AMRRecommendResponseData (source) ;
 		}
 
 		@Override
-		public RecommendData[] newArray(int size) {
-			return new RecommendData[size] ;
+		public AMRRecommendResponseData[] newArray(int size) {
+			return new AMRRecommendResponseData[size] ;
 		}
 	} ;
 	
 	// Constructor
-	public RecommendData () {
+	public AMRRecommendResponseData () {
 		// String
 		this.track_id = "" ;
 		this.artist = "" ;
@@ -33,7 +33,7 @@ public class RecommendData implements Parcelable {
 		this.score = "" ;
 	}
 	
-	public RecommendData (RecommendData recommendData) {
+	public AMRRecommendResponseData (AMRRecommendResponseData recommendData) {
 		// String
 		this.track_id = recommendData.getTrackID() ;
 		this.artist = recommendData.getArtist() ;
@@ -45,7 +45,7 @@ public class RecommendData implements Parcelable {
 		this.score = recommendData.getScore() ;
 	}
 	
-	public RecommendData (String track_id, String artist, String title, String album, String url, String score) {
+	public AMRRecommendResponseData (String track_id, String artist, String title, String album, String url, String score) {
 		// String
 		this.track_id = track_id ;
 		this.artist = artist ;
@@ -57,7 +57,7 @@ public class RecommendData implements Parcelable {
 		this.score = score ;		
 	}
 	
-	public RecommendData (Parcel source) {
+	public AMRRecommendResponseData (Parcel source) {
 		// String
 		this.track_id = source.readString() ;
 		this.artist = source.readString() ;
