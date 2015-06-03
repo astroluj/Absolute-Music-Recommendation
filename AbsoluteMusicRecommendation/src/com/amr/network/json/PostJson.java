@@ -11,6 +11,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import com.amr.util.util;
+import com.arm.data.AMRData;
+import com.arm.data.RecommendData;
 
 import android.content.ContentValues;
 import android.util.Log;
@@ -105,14 +107,11 @@ public class PostJson extends ControllJson {
 		}
 	}
 	
-	public ContentValues postRequest (String feature, String track_id,
-			String artist, String title, 
-			Object startIndex, Object count) {
+	public ContentValues postRequest (AMRData amrData) {
 		
 		try {
 			ContentValues jsonMsg = new ContentValues () ;
-			jsonMsg.put(util.DATA, this.searchMakeJson(feature, track_id, artist, title, 
-							startIndex, count)) ;
+			jsonMsg.put(util.DATA, this.makeJson(amrData)) ;
 							
 			Log.d (util.TAG + util.POST + ": ", jsonMsg.toString()) ;
 			
@@ -125,7 +124,7 @@ public class PostJson extends ControllJson {
 	}
 	
 	// Json Paser
-	public ArrayList<ResponsePaserData> getResponseArrays (String responseMsg) {
+	public ArrayList<RecommendData> getResponseArrays (String responseMsg) {
 
 		Log.d (util.TAG + "Response : " , responseMsg) ;
 		

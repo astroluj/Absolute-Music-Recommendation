@@ -3,7 +3,7 @@ package com.amr.util;
 public class util {
 	// NetworkHandler Names
 	public final static int CALL_FEATURE  = 1 ;
-	public final static int SEND_RECOMMEND_LIST = 0 ;
+	public final static int RECOMMEND_LIST = 0 ;
 	public final static int NOT_FOUND_RECOMMEND = 2 ;
 	
 	// BroadCast keys

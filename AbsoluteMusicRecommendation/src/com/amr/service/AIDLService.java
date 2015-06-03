@@ -4,6 +4,7 @@ package com.amr.service;
 import com.amr.aidl.amrAIDL;
 import com.amr.thread.NetworkThread;
 import com.amr.util.util;
+import com.arm.data.AMRData;
 
 import android.app.Service;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
+import android.util.Log;
 
 public class AIDLService extends Service {
 
@@ -27,16 +29,24 @@ public class AIDLService extends Service {
 
 			@Override
 			// Client Analyzation music
-			public void getAnalyzeToRecommendLists (String recvAction, String analyzeData, int count) throws RemoteException {
+			public void getAnalyzeToRecommendLists (String recvAction, String mediaPath, int count) throws RemoteException {
+				
+				// 주어진 mediaPath를 통하여 음악의 Feature 구하기
+				String feature = null ;
+				try {
+					startNetworkThread(recvAction, new AMRData (feature, null, null, null, null, count)) ;
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
 			// Keyword Searching
 			@Override
-			public void getKeywordToRecommendLists (String recvAction, String artist,
-					String title, int count) throws RemoteException {
-				
+			public void getKeywordToRecommendLists (String recvAction, String artist, String title, int count) throws RemoteException {
+
 				try {
-					startNetworkThread(recvAction, artist, title, count) ;
+					startNetworkThread(recvAction, new AMRData (null, null, artist, title, util.START_INDEX, count)) ;
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -54,9 +64,10 @@ public class AIDLService extends Service {
 		super.onDestroy() ;
 	}
 
-	private void startNetworkThread (String recvAction, String artist, String title, int count) {
+	// NetworkThread Create & Release
+	private void startNetworkThread (String recvAction, AMRData amrData) {
 		networkThread =new NetworkThread (getApplicationContext(), networkHandlerCallback,
-				recvAction, artist, title, count) ;
+				recvAction, amrData) ;
 		
 		networkThread.setDaemon(true) ;
 		networkThread.start() ;
@@ -71,14 +82,16 @@ public class AIDLService extends Service {
 		}
 	}
 	
+	// NetworkThread handler
 	private class NetworkHandlerCallback implements Handler.Callback {
 		public boolean handleMessage (Message msg) {
 			 
+			releaseNetworkThread() ;
+			
 			switch (msg.what) {
-			case util.SEND_RECOMMEND_LIST : 
+			case util.RECOMMEND_LIST : 
 				try {
-					
-					releaseNetworkThread() ;
+					Log.d (util.TAG + "Handler Come : ", "RECOMMEND_LIST") ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -87,7 +100,7 @@ public class AIDLService extends Service {
 				
 			case util.CALL_FEATURE :
 				try {
-					
+					Log.d (util.TAG + "Handler Come : ", "CALL_FEATURE") ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -96,7 +109,7 @@ public class AIDLService extends Service {
 				
 			case util.NOT_FOUND_RECOMMEND :
 				try {
-					
+					Log.d (util.TAG + "Handler Come : ", "NOT_FOUND_RECOMMEND") ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

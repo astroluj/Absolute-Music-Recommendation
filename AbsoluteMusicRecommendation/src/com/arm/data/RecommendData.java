@@ -1,38 +1,63 @@
-package com.amr.network.json;
+package com.arm.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ResponsePaserData implements Parcelable {
+public class RecommendData implements Parcelable {
 
 	private String track_id, artist, title, album, url, score  ;
 	
-	public static final Parcelable.Creator<ResponsePaserData> CREATOR = new Parcelable.Creator<ResponsePaserData> () {
+	public static final Parcelable.Creator<RecommendData> CREATOR = new Parcelable.Creator<RecommendData> () {
 
 		@Override
-		public ResponsePaserData createFromParcel(Parcel source) {
-			return new ResponsePaserData (source) ;
+		public RecommendData createFromParcel(Parcel source) {
+			return new RecommendData (source) ;
 		}
 
 		@Override
-		public ResponsePaserData[] newArray(int size) {
-			return new ResponsePaserData[size] ;
+		public RecommendData[] newArray(int size) {
+			return new RecommendData[size] ;
 		}
 	} ;
 	
-	public ResponsePaserData  () {
+	// Constructor
+	public RecommendData () {
 		// String
-		track_id = "" ;
-		artist = "" ;
-		title = "" ;
-		album = "" ;
-		url = "" ;
+		this.track_id = "" ;
+		this.artist = "" ;
+		this.title = "" ;
+		this.album = "" ;
+		this.url = "" ;
 		
 		// Float .2f
-		score = "" ;
+		this.score = "" ;
 	}
 	
-	public ResponsePaserData (Parcel source) {
+	public RecommendData (RecommendData recommendData) {
+		// String
+		this.track_id = recommendData.getTrackID() ;
+		this.artist = recommendData.getArtist() ;
+		this.title = recommendData.getTitle() ;
+		this.album = recommendData.getAlbum() ;
+		this.url = recommendData.getURL() ;
+		
+		// Float .2f
+		this.score = recommendData.getScore() ;
+	}
+	
+	public RecommendData (String track_id, String artist, String title, String album, String url, String score) {
+		// String
+		this.track_id = track_id ;
+		this.artist = artist ;
+		this.title = title ;
+		this.album = album ;
+		this.url = url ;
+		
+		// Float .2f
+		this.score = score ;		
+	}
+	
+	public RecommendData (Parcel source) {
 		// String
 		this.track_id = source.readString() ;
 		this.artist = source.readString() ;

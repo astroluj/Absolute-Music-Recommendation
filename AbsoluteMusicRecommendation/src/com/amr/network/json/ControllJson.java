@@ -7,13 +7,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.amr.util.util;
+import com.arm.data.AMRData;
+import com.arm.data.RecommendData;
 
 public class ControllJson {
 
 	// Music/Search Json
-	protected String searchMakeJson (String feature, String track_id,
+	// Music/Similar Json
+	// Music/Recommend Json
+	protected String makeJson (String feature, String track_id,
 			String artist, String title, 
-			Object startIndex, Object count) {
+			Integer startIndex, Integer count) {
 		
 		String jsonMsg = "" ;
 		
@@ -33,10 +37,10 @@ public class ControllJson {
 				jsonObject.put(util.TITLE, title) ;
 			
 			if (startIndex != null) 
-				jsonObject.put(util.START, (Integer)startIndex) ;
+				jsonObject.put(util.START, startIndex) ;
 			
 			if (count != null)
-				jsonObject.put(util.COUNT, (Integer)count) ;
+				jsonObject.put(util.COUNT, count) ;
 
 			jsonMsg = jsonObject.toString() ;
 		} catch (JSONException e) {
@@ -46,15 +50,45 @@ public class ControllJson {
 		return jsonMsg ;
 	}
 	
-	// Music/Similar Json
-	// Music/Recommend Json
+	protected String makeJson (AMRData amrData) {
+		
+		String jsonMsg = "" ;
+		
+		try {
+			JSONObject jsonObject = new JSONObject() ;
+			
+			if (amrData.getFeature() != null) 
+				jsonObject.put(util.FEATURE, amrData.getFeature()) ;
+			
+			if (amrData.getTrackID() != null)
+				jsonObject.put(util.TRACK_ID, amrData.getTrackID()) ;
+			
+			if (amrData.getArtist() != null)
+				jsonObject.put(util.ARTIST, amrData.getArtist()) ;
+			
+			if (amrData.getTitle() != null)
+				jsonObject.put(util.TITLE, amrData.getTitle()) ;
+			
+			if (amrData.getStartIndex() != null) 
+				jsonObject.put(util.START, amrData.getStartIndex()) ;
+			
+			if (amrData.getCount() != null)
+				jsonObject.put(util.COUNT, amrData.getCount()) ;
+
+			jsonMsg = jsonObject.toString() ;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return jsonMsg ;
+	}
 	
 	// Paser
-	protected ArrayList<ResponsePaserData> responsePaser (String responseMsg) {
+	protected ArrayList<RecommendData> responsePaser (String responseMsg) {
 		
 		try {
 			// Init Response message Keys containers
-			ArrayList<ResponsePaserData> paserArray = new ArrayList<ResponsePaserData> () ;
+			ArrayList<RecommendData> paserArray = new ArrayList<RecommendData> () ;
 			
 			JSONObject jsonObject = new JSONObject(responseMsg) ;
 			JSONArray jsonArray = jsonObject.getJSONArray(util.TRACKS) ;
@@ -63,7 +97,7 @@ public class ControllJson {
 				
 				JSONObject paserData = jsonArray.getJSONObject(i) ;
 				
-				ResponsePaserData ResponsePaserData = new ResponsePaserData () ;
+				RecommendData ResponsePaserData = new RecommendData () ;
 				
 				// Keys Paser
 				try {
