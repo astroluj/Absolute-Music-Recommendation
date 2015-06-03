@@ -106,7 +106,7 @@ public class NetworkThread extends Thread {
 				// feature 가능 하면 feature 추출
 				if (feature == null) {
 					
-					handler.sendEmptyMessage(util.CALL_FEATURE) ;
+					handler.sendEmptyMessage(util.ANALYZE_FEATURE) ;
 				}
 				// 가능 못하면 DB에서 찾을 수 없다고 알림
 				else {
