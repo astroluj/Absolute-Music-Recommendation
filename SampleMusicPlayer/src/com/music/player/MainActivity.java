@@ -3,7 +3,8 @@ package com.music.player;
 import java.util.ArrayList;
 
 import com.amr.aidl.amrAIDL;
-import com.amr.network.json.ResponsePaserData;
+import com.amr.data.AMRRecommendResponseData;
+import com.android.music.IMediaPlaybackService;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -16,141 +17,151 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 public class MainActivity extends Activity {
 
-	private final String TAG = "Sample Music Player :" ;
-	private final long INTERVAL = 1000 ;
-	private final String MUSIC_RECOMMEND_RESPONSE = "com.music.player.response" ;
+	// Custom Class
 	private RecommendationReciever recommedRecv ;
+	private MusicAdapter musicAdapter;
 	
-	// AIDL
-	amrAIDL aidlService;
-	ServiceConnection serviceConn;
-	
+	// AMRAIDL
+	private amrAIDL aidlAMRService ;
+	// MediaPlayerBackService AIDL
+	private IMediaPlaybackService aidlMediaService ;
+	private ServiceConnection amrServiceConn, mediaPlayServiceConn ;
+    
 	private NotificationManager notiManager ;
 	private NotificationCompat.Builder notiBuilder ;
 	private NotificationCompat.InboxStyle inboxStyle ;
+	
+	private ListView musicListView;
+	
 	private MediaPlayer mediaPlayer ;
-	private SeekBar musicSeekbar;
-	private ImageButton playBtn ;
 	
 	private Handler playHandler = new Handler();
 	
-	private boolean isFirstPlayFlag ;
-	private int songDuration ;
-
+	private boolean isHtc ;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		//set the layout of the Activity
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_main) ;
 
 		// TODO : 필수
 		// AIDL SET
-		serviceConn = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) {
-				aidlService = null;
-			}
-
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				aidlService = amrAIDL.Stub.asInterface(service);
-			}
-		};
-				
+		serviceConnection () ;
+		
 		//initialize views
 		initializes();
 	}
 	
-	public void initializes(){
+	private void serviceConnection () {
+		amrServiceConn = new ServiceConnection() {
+			public void onServiceDisconnected(ComponentName name) {
+				aidlAMRService = null ;
+				Log.i(util.TAG + "AMR", "Disconnected!");
+			}
+
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				aidlAMRService = amrAIDL.Stub.asInterface(service);
+				Log.i(util.TAG + "AMR", "Connected!");
+			}
+		};
+		mediaPlayServiceConn = new ServiceConnection () {
+			public void onServiceDisconnected(ComponentName name) {
+				aidlMediaService = null ;
+				Log.i(util.TAG + "MediaPlayBackService", "Disconnected!");
+			}
+
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				aidlMediaService = IMediaPlaybackService.Stub.asInterface(service);
+				Log.i(util.TAG + "MediaPlayBackService", "Connected!");
+			}
+		} ;
+	}
+	
+	private void initializes(){
+		// MusicAdapter
+		musicAdapter = new MusicAdapter (getApplicationContext()) ;	
+		
+		// ListView
+		musicListView = (ListView) findViewById (R.id.music_list_view) ;
+		musicListView.setAdapter(musicAdapter);
+				
+		/* Listener for selecting a item */
+		musicListView.setOnItemClickListener(new ListView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
+                Uri musicURI = Uri.withAppendedPath(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "" + musicAdapter.getMusicID(position)); 
+                
+                //playMusic(musicURI);
+                playMusicService(musicAdapter.getMusicID(position)) ;
+            }
+        });
+        
 		// Notification Manager
 		notiManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE) ;
 				
 		// Music Player
-		mediaPlayer = MediaPlayer.create(this, R.raw.sample);
-		songDuration = mediaPlayer.getDuration() ;
-				
-		// Music Controll
-		musicSeekbar = (SeekBar) findViewById (R.id.music_seek_bar) ;
-		musicSeekbar.setMax (songDuration) ;
-		// No play case
-		musicSeekbar.setClickable (false) ;
-		
-		playBtn = (ImageButton) findViewById (R.id.music_play) ;
+		mediaPlayer = new MediaPlayer();
 	}
 
-	// Music Play
-	public void playClick (View view) {
-		
-		if (musicSeekbar.isClickable() == false) 
-			musicSeekbar.setClickable(true) ;
-		
-		// playing
-		if (mediaPlayer.isPlaying ()) {
-			playHandler.removeCallbacks(moveSeekBar) ;
-			mediaPlayer.pause() ;
-			playBtn.setImageResource (android.R.drawable.ic_media_play) ;
-		}
-		// stopping
-		else {
-			playHandler.postDelayed(moveSeekBar, INTERVAL);
-			mediaPlayer.start () ;
-			playBtn.setImageResource (android.R.drawable.ic_media_pause) ;
-		}
-	}
+	private void playMusicService(int id) {
+    	try {
+    		// 첫번째 인자를 Media ID로 이루어진
+            //  Array를 넘기면 Play 리스트를 연주하게 된다.
 
+    		aidlMediaService.open(new long [] {id}, 0);
+    		aidlMediaService.play();
+    	} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+	
 	//handler to change seekBarTime
 	private Runnable moveSeekBar = new Runnable () {
-		int currentPos = 0 ;
 		
 		public void run () {
 			try {
-				// Send Broad
-				if (isFirstPlayFlag == false) {
-					
-					// Register Receiver
-					if (recommedRecv == null) {
-						recommedRecv = new RecommendationReciever() ;
-						registerReceiver(recommedRecv, new IntentFilter (MUSIC_RECOMMEND_RESPONSE)) ;
-					}
-					// Call AIDL
-					try {
-						aidlService.getKeywordToRecommendLists(MUSIC_RECOMMEND_RESPONSE,
-								"백뱅", "Looser", 5) ;
-						isFirstPlayFlag = true ;
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					} catch (NullPointerException e) {
-					}
+				// Register Receiver
+				if (recommedRecv == null) {
+					recommedRecv = new RecommendationReciever() ;
+					registerReceiver(recommedRecv, new IntentFilter (util.MUSIC_RECOMMEND_RESPONSE)) ;
 				}
+				// Call AIDL
+				try {
+					aidlAMRService.getKeywordToRecommendLists(util.MUSIC_RECOMMEND_RESPONSE,
+							"백뱅", "Looser", 5) ;
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				} catch (NullPointerException e) {}
 				
-				//Get Current Position
-				currentPos = mediaPlayer.getCurrentPosition();
-				// Set SeekBar Position
-				musicSeekbar.setProgress((int)currentPos) ;
-				
-				playHandler.postDelayed (this, INTERVAL) ;
 			} catch (Exception e) {}
 		}
 	};
 	
 	
+
 	// Catch Recommendation list on Intent Action 
 	private class RecommendationReciever extends BroadcastReceiver {
 		public void onReceive(Context context, Intent intent) {
 			// Check Action
-			if (intent.getAction().equals(MUSIC_RECOMMEND_RESPONSE)) {
+			if (intent.getAction().equals(util.MUSIC_RECOMMEND_RESPONSE)) {
 				// Push shows music list
 				// Notification Alert
 				// Release previous notification
@@ -170,7 +181,7 @@ public class MainActivity extends Activity {
 				notiBuilder.setAutoCancel(true) ;
 				
 				// API < API 11
-				ArrayList<ResponsePaserData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
+				ArrayList<AMRRecommendResponseData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
 				// Debug lists
 				if (lists == null || lists.size() == 0) {
 					
@@ -179,7 +190,7 @@ public class MainActivity extends Activity {
 				else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
 					String contentText = "" ;
 					
-					for (ResponsePaserData list : lists) {
+					for (AMRRecommendResponseData list : lists) {
 						contentText += "Artist : " + list.getArtist() ;
 						if (list.getAlbum() != null) contentText += " Album : " + list.getAlbum() ;
 						contentText += " Title : " + list.getTitle() + "\n" ;
@@ -190,7 +201,7 @@ public class MainActivity extends Activity {
 				else {
 					// Inbox Style Set
 					inboxStyle = new NotificationCompat.InboxStyle(notiBuilder) ;
-					for (ResponsePaserData list : lists) {
+					for (AMRRecommendResponseData list : lists) {
 						String contentText = "" ;
 						contentText += "Artist : " + list.getArtist() ;
 						if (list.getAlbum() != null) contentText += " Album : " + list.getAlbum() ;
@@ -209,23 +220,30 @@ public class MainActivity extends Activity {
 		super.onPause() ;
 		
 		// AIDL disable
-		unbindService(serviceConn);
+		unbindService(amrServiceConn);
+		unbindService(mediaPlayServiceConn);
 	}
 
 	protected void onResume() {
 		super.onResume();
 
 		// AIDL enable
-		Intent aidlIntent = new Intent("com.amr.service.AIDLService");
-		Log.d(TAG, "Connection bind " + bindService(aidlIntent, serviceConn, BIND_AUTO_CREATE));
+		Intent amrIntent = new Intent(util.AMR_FILTER);
+		//amrIntent.setClassName(util.AMR_PACKAGE_NAME, util.AMR_CLASS_NAME) ;
+		Log.d(util.TAG, "AMR Connection bind " + bindService(amrIntent, amrServiceConn, BIND_AUTO_CREATE));
+		
+		Intent mediaPlayIntent = new Intent(util.MEDIA_PLAY_FILTER) ;
+		//mediaPlayIntent.setClassName(util.MEDIA_PLAY_PACKAGE_NAME, util.MEDIA_PLAY_CLASS_NAME) ;
+        
+		Log.d (util.TAG, "MediaPlayer Connection bind " + bindService(mediaPlayIntent, mediaPlayServiceConn, BIND_AUTO_CREATE)) ;
 	}
 	
 	protected void onDestroy () {
 		super.onDestroy();
 		
 		mediaPlayer.stop();
+		mediaPlayer.reset();
 		mediaPlayer.release();
-		playHandler.removeCallbacks(moveSeekBar) ;
 		
 		unregisterReceiver () ;
 	}
