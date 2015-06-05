@@ -6,7 +6,7 @@ public class util {
 	public static final String AMR_PACKAGE_NAME = "com.amr.service" ;
 	public static final String AMR_CLASS_NAME = "com.amr.service.AMRService" ;
 	
-	public static final String MEDIA_PLAY_FILTER = "com.android.music.MediaPlaybackService" ;
+	public static final String MEDIA_PLAY_FILTER = "content://media/external/audio/media/" ;
 	public static final String MEDIA_PLAY_PACKAGE_NAME = "com.android.music" ;
 	public static final String MEDIA_PLAY_CLASS_NAME = "com.android.music.MediaPlaybackService" ;
 	

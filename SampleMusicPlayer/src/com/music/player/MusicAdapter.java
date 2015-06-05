@@ -34,8 +34,8 @@ public class MusicAdapter extends BaseAdapter {
     // List view arrays
     private ArrayList<String> musicIDList;
     private ArrayList<String> albumImageList;
-    private ArrayList<String> musicTitleList;
-    private ArrayList<String> musicArtistList;
+    public ArrayList<String> musicTitleList;
+    public ArrayList<String> musicArtistList;
     
     MusicAdapter(Context context){
     	
