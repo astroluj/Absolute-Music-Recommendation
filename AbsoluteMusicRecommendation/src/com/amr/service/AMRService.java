@@ -14,7 +14,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 
-public class AIDLService extends Service {
+public class AMRService extends Service {
 
 	amrAIDL.Stub amrService  ;	// AIDLService
 	
@@ -26,20 +26,6 @@ public class AIDLService extends Service {
 		
 		// stub로 연결하여 미리 작성한 interface대로 작성
 		amrService =new amrAIDL.Stub() {
-
-			@Override
-			// Client Analyzation music
-			public void getAnalyzeToRecommendLists (String recvAction, String mediaPath, int count) throws RemoteException {
-				
-				// 주어진 mediaPath를 통하여 음악의 Feature 구하기
-				String feature = null ;
-				try {
-					startNetworkThread(recvAction, new AMRRecommendRequestData (feature, null, null, null, null, count)) ;
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
 
 			// Keyword Searching
 			@Override
