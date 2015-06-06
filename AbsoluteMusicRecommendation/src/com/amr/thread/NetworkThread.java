@@ -104,7 +104,7 @@ public class NetworkThread extends Thread {
 			} catch (IndexOutOfBoundsException e) {
 				// dis-exist in Bonacell DB
 				// feature 가능 하면 feature 추출
-				if (feature == null) {
+				if (feature != null) {
 					
 					handler.sendEmptyMessage(util.ANALYZE_FEATURE) ;
 				}

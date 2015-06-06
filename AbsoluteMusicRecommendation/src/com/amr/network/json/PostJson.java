@@ -41,7 +41,7 @@ public class PostJson extends ControllJson {
 					
 					break ;
 				} catch (SocketTimeoutException e) {
-					Log.d (util.TAG + "Socket Connect Count", "Count " + i) ;
+					Log.e (util.TAG + "Socket Connect Count", "Count " + i) ;
 				}
 			}
 			bufferedWriter = new BufferedWriter(new OutputStreamWriter (outputStream, util.UTF_8)) ;
@@ -155,7 +155,7 @@ public class PostJson extends ControllJson {
 		try {
 			Log.d (util.TAG + "Response : " , "Response Data : " + responseMsg) ;
 		} catch (NullPointerException e) {
-			Log.d (util.TAG + "Response : " , "null") ;
+			Log.e (util.TAG + "Response : " , "null") ;
 		}
 		return this.responsePaser(responseMsg) ;
 	}

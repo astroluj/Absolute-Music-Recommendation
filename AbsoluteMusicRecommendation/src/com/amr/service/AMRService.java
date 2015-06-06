@@ -29,8 +29,9 @@ public class AMRService extends Service {
 
 			// Keyword Searching
 			@Override
-			public void getKeywordToRecommendLists (String recvAction, String artist, String title, int count) throws RemoteException {
+			public void getKeywordToRecommendLists (String uri, String recvAction, String artist, String title, int count) throws RemoteException {
 
+				Log.d (util.TAG, "called getKeywordToRecommendLists function") ;
 				try {
 					if (networkThread != null)
 						releaseNetworkThread();
