@@ -32,8 +32,10 @@ public class AMRService extends Service {
 			public void getKeywordToRecommendLists (String recvAction, String artist, String title, int count) throws RemoteException {
 
 				try {
-					startNetworkThread(recvAction, new AMRRecommendRequestData (null, null, artist, title, util.START_INDEX, count)) ;
+					if (networkThread != null)
+						releaseNetworkThread();
 					
+					startNetworkThread(recvAction, new AMRRecommendRequestData (null, null, artist, title, util.START_INDEX, count)) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
