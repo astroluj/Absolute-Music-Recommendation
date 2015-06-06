@@ -34,8 +34,8 @@ public class MusicAdapter extends BaseAdapter {
     // List view arrays
     private ArrayList<String> musicIDList;
     private ArrayList<String> albumImageList;
-    public ArrayList<String> musicTitleList;
-    public ArrayList<String> musicArtistList;
+    private ArrayList<String> musicTitleList;
+    private ArrayList<String> musicArtistList;
     
     MusicAdapter(Context context){
     	
@@ -109,6 +109,66 @@ public class MusicAdapter extends BaseAdapter {
         return Integer.parseInt((musicIDList.get(position)));
     }
     
+    public String getMusicArtist (int position) {
+    	try {
+    		String artist = musicArtistList.get(position) ;
+    		return (artist.equals(util.UNKNOWN)) ? null : artist ;
+    	} catch (NullPointerException e) {
+    		return null ;
+    	}
+    	
+    }
+    
+    public String getMusicTitle (int position) {
+    	try {
+    		String title = musicTitleList.get(position) ;
+    		return (title.equals(util.UNKNOWN)) ? null : title ;
+    	} catch (NullPointerException e) {
+    		return null ;
+    	}
+    }
+    
+    // MusicArtistList GetSet
+    public ArrayList<String> getMusicArtisList () {
+    	return this.musicArtistList ;
+    }
+    public void setMusicArtistList (ArrayList<String> musicArtistList) {
+    	this.musicArtistList = musicArtistList ;
+    }
+    
+    // MusicTitleList GetSet
+    public ArrayList<String> getMusicTitleList () {
+    	return this.musicTitleList ;
+    }
+    public void setMusicTitleList (ArrayList<String> musicTitleList) {
+    	this.musicTitleList = musicTitleList ;
+    }
+    
+    // AlbumImageList GetSet
+    public ArrayList<String> getAlbumImageList () {
+    	return this.albumImageList ;
+    }
+    public void setAlbumImageList (ArrayList<String> albumImageList) {
+    	this.albumImageList = albumImageList ;
+    }
+    
+    // MusicIDList GetSet
+    public ArrayList<String> getMusicIDListt () {
+    	return this.musicIDList ;
+    }
+    public void setMusicIDList (ArrayList<String> musicIDList) {
+    	this.musicIDList = musicIDList ;
+    }
+    
+    public Bitmap getAlbumImage (int position) {
+    	
+    	Bitmap albumImage = getArtworkQuick(context, Integer.parseInt((albumImageList.get(position))), 50, 50);
+    	// Default Album Image
+    	
+		return (albumImage == null) ? BitmapFactory.decodeResource(
+				context.getResources(), R.drawable.equalizer) : albumImage ;
+	}
+    
     public View getView(int position, View convertView, ViewGroup parent) {
     	
         View listViewItem = convertView ; 
@@ -120,7 +180,11 @@ public class MusicAdapter extends BaseAdapter {
         // Album Bitmap을 얻는다. 
         ImageView albumImageView = (ImageView) listViewItem.findViewById (R.id.album_image);
         Bitmap albumImage = getArtworkQuick(context, Integer.parseInt((albumImageList.get(position))), 50, 50);
-        albumImageView.setImageBitmap(albumImage) ;
+        
+        // Default Album Image
+        if (albumImage == null)
+        	albumImageView.setImageResource(R.drawable.equalizer);
+        else albumImageView.setImageBitmap(albumImage) ;
          
         // Title 설정 
         TextView titleTextView = (TextView) listViewItem.findViewById (R.id.title) ;

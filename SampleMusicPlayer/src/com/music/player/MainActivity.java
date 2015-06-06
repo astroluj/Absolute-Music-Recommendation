@@ -1,28 +1,10 @@
 package com.music.player;
 
-import java.util.ArrayList;
-
-import com.amr.aidl.amrAIDL;
-import com.amr.data.AMRRecommendResponseData;
 
 import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.graphics.BitmapFactory;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
-import android.provider.MediaStore;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,20 +13,9 @@ import android.widget.ListView;
 public class MainActivity extends Activity {
 
 	// Custom Class
-	private RecommendationReciever recommedRecv ;
 	private MusicAdapter musicAdapter;
 	
-	// AMRAIDL
-	private amrAIDL aidlAMRService ;
-	private ServiceConnection amrServiceConn ;
-    
-	private NotificationManager notiManager ;
-	private NotificationCompat.Builder notiBuilder ;
-	private NotificationCompat.InboxStyle inboxStyle ;
-	
 	private ListView musicListView;
-	
-	private MediaPlayer mediaPlayer ;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,26 +24,8 @@ public class MainActivity extends Activity {
 		//set the layout of the Activity
 		setContentView(R.layout.activity_main) ;
 
-		// TODO : 필수
-		// AIDL SET
-		serviceConnection () ;
-		
 		//initialize views
 		initializes();
-	}
-	
-	private void serviceConnection () {
-		amrServiceConn = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) {
-				aidlAMRService = null ;
-				Log.i(util.TAG + "AMR", "Disconnected!");
-			}
-
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				aidlAMRService = amrAIDL.Stub.asInterface(service);
-				Log.i(util.TAG + "AMR", "Connected!");
-			}
-		};
 	}
 	
 	private void initializes(){
@@ -86,144 +39,38 @@ public class MainActivity extends Activity {
 		/* Listener for selecting a item */
 		musicListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
-                Uri musicURI = Uri.withAppendedPath(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "" + musicAdapter.getMusicID(position)); 
-                
-                //playMusic(musicURI);
-                playMusicService(musicAdapter.musicArtistList.get(position), musicAdapter.musicTitleList.get(position), musicAdapter.getMusicID(position)) ;
+                playMusicService(musicAdapter, position) ;
             }
         });
-        
-		// Notification Manager
-		notiManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE) ;
-				
-		// Music Player
-		mediaPlayer = new MediaPlayer();
 	}
 
-	private void playMusicService(String artist, String title, int id) {
+	private void playMusicService(MusicAdapter musicAdapter, int position) {
     	try {
-    		// 첫번째 인자를 Media ID로 이루어진
-            //  Array를 넘기면 Play 리스트를 연주하게 된다.
-
-    		Intent i = new Intent(Intent.ACTION_VIEW);
-    	    i.setDataAndType(Uri.parse("content://media/external/audio/media/" + id), "audio/mp3");
-    	    startActivity(i);
-
-    	    // Register Receiver
-			if (recommedRecv == null) {
-				recommedRecv = new RecommendationReciever() ;
-				registerReceiver(recommedRecv, new IntentFilter (util.MUSIC_RECOMMEND_RESPONSE)) ;
-			}
-			// Call AIDL
-			try {
-				aidlAMRService.getKeywordToRecommendLists(util.MUSIC_RECOMMEND_RESPONSE,
-						artist, title, 5) ;
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			} catch (NullPointerException e) {}
-    		//aidlMediaService.open(new long [] {id}, 0);
-    		//aidlMediaService.play();
-    	} catch (/*Remote*/Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    		Intent intent = new Intent(MainActivity.this, PlayActivity.class) ;
+    		    
+    		// Select Position
+    		intent.putExtra("position", position) ;
+    	
+    		// Music Info
+		    intent.putStringArrayListExtra("musicArtistList", musicAdapter.getMusicArtisList()) ;
+		    intent.putStringArrayListExtra("musicTitleList", musicAdapter.getMusicTitleList()) ;
+		    intent.putStringArrayListExtra("albumImageList", musicAdapter.getAlbumImageList()) ;
+		    intent.putStringArrayListExtra("musicIDList", musicAdapter.getMusicIDListt()) ;
+    		
+    	    startActivityForResult(intent, util.REQUEST_CODE);
+    	} catch (ActivityNotFoundException e) {
+    		e.printStackTrace();
+    		Log.e (util.TAG, "ActivityNotFoundException") ;
+    	}
     }
-
-	// Catch Recommendation list on Intent Action 
-	private class RecommendationReciever extends BroadcastReceiver {
-		public void onReceive(Context context, Intent intent) {
-			// Check Action
-			if (intent.getAction().equals(util.MUSIC_RECOMMEND_RESPONSE)) {
-				// Push shows music list
-				// Notification Alert
-				// Release previous notification
-				if (notiBuilder != null) {
-					notiManager.cancel(0) ;
-					inboxStyle = null ;
-					notiBuilder = null ;
-				}
+	
+	protected void onActivityResult (int requestCode, int resultCode, Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent) ;
+		
+		if (requestCode == util.REQUEST_CODE) {
+			if (intent != null) {
 				
-				PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
-				notiBuilder = new NotificationCompat.Builder(getApplicationContext()) ;
-				notiBuilder.setContentTitle("추천 리스트") ;
-				notiBuilder.setSmallIcon(R.drawable.equalizer) ;
-				notiBuilder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.equalizer)) ;
-				notiBuilder.setTicker("추천 음악") ;
-				notiBuilder.setContentIntent(pendingIntent) ;
-				notiBuilder.setAutoCancel(true) ;
-				
-				// API < API 11
-				ArrayList<AMRRecommendResponseData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
-				// Debug lists
-				if (lists == null || lists.size() == 0) {
-					
-					notiBuilder.setContentText("비슷한 음악을 찾을 수 없습니다.") ;
-				}
-				else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-					String contentText = "" ;
-					
-					for (AMRRecommendResponseData list : lists) {
-						contentText += "Artist : " + list.getArtist() ;
-						if (list.getAlbum() != null) contentText += " Album : " + list.getAlbum() ;
-						contentText += " Title : " + list.getTitle() + "\n" ;
-						
-					}
-					notiBuilder.setContentText(contentText) ;
-				}
-				else {
-					// Inbox Style Set
-					inboxStyle = new NotificationCompat.InboxStyle(notiBuilder) ;
-					for (AMRRecommendResponseData list : lists) {
-						String contentText = "" ;
-						contentText += "Artist : " + list.getArtist() ;
-						if (list.getAlbum() != null) contentText += " Album : " + list.getAlbum() ;
-						contentText += " Title : " + list.getTitle() ;
-						
-						inboxStyle.addLine(contentText) ;
-					}
-				}
-				// Show notification
-				notiManager.notify(0, notiBuilder.build()) ;
 			}
-		}
-	}
-	
-	protected void onPause () {
-		super.onPause() ;
-		
-		// AIDL disable
-		unbindService(amrServiceConn);
-	}
-
-	protected void onResume() {
-		super.onResume();
-
-		// AIDL enable
-		Intent amrIntent = new Intent(util.AMR_FILTER);
-		//amrIntent.setClassName(util.AMR_PACKAGE_NAME, util.AMR_CLASS_NAME) ;
-		Log.d(util.TAG, "AMR Connection bind " + bindService(amrIntent, amrServiceConn, BIND_AUTO_CREATE));
-	}
-	
-	protected void onDestroy () {
-		super.onDestroy();
-		
-		mediaPlayer.stop();
-		mediaPlayer.reset();
-		mediaPlayer.release();
-		
-		unregisterReceiver () ;
-	}
-	
-	private void unregisterReceiver () {
-		// UnRegister Receiver
-		try {
-			if (recommedRecv != null) {
-				unregisterReceiver(recommedRecv);
-				recommedRecv = null ;
-			} 
-		} catch (IllegalArgumentException e) {
-			recommedRecv = null ;
 		}
 	}
 }
