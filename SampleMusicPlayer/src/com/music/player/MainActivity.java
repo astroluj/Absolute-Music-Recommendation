@@ -7,7 +7,6 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,8 +20,9 @@ import android.widget.ListView;
 
 public class MainActivity extends Activity {
 
+	public static final String TAG = "Sample Music Player :" ;
+	
 	// Custom Class
-	private RecommendationReciever recommedRecv ;
 	private MusicAdapter musicAdapter;
 	
 	// AMRAIDL
@@ -50,23 +50,17 @@ public class MainActivity extends Activity {
 		amrServiceConn = new ServiceConnection() {
 			public void onServiceDisconnected(ComponentName name) {
 				aidlAMRService = null ;
-				Log.i(util.TAG + "AMR", "Disconnected!");
+				Log.i(TAG + "AMR", "Disconnected!");
 			}
 
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				aidlAMRService = amrAIDL.Stub.asInterface(service);
-				Log.i(util.TAG + "AMR", "Connected!");
+				Log.i(TAG + "AMR", "Connected!");
 			}
 		};
 	}
 	
 	private void initializes(){
-		// Receiver Registered and AMR called
-		if (recommedRecv == null) {
-			recommedRecv = new RecommendationReciever() ;
-			registerReceiver(recommedRecv, new IntentFilter (util.MUSIC_RECOMMEND_RESPONSE_FILTER)) ;
-		}
-				
 		// MusicAdapter
 		musicAdapter = new MusicAdapter (getApplicationContext()) ;	
 		
@@ -93,12 +87,12 @@ public class MainActivity extends Activity {
 		    intent.putStringArrayListExtra("musicArtistList", musicAdapter.getMusicArtisList()) ;
 		    intent.putStringArrayListExtra("musicTitleList", musicAdapter.getMusicTitleList()) ;
 		    intent.putStringArrayListExtra("albumImageList", musicAdapter.getAlbumImageList()) ;
-		    intent.putStringArrayListExtra("musicIDList", musicAdapter.getMusicIDListt()) ;
+		    intent.putStringArrayListExtra("musicIDList", musicAdapter.getMusicIDList()) ;
     		
     	    startActivityForResult(intent, util.REQUEST_CODE);
     	} catch (ActivityNotFoundException e) {
     		e.printStackTrace();
-    		Log.e (util.TAG, "ActivityNotFoundException") ;
+    		Log.e (TAG, "ActivityNotFoundException") ;
     	}
     	
 		// Call AIDL
@@ -141,24 +135,6 @@ public class MainActivity extends Activity {
 		// AIDL enable
 		Intent amrIntent = new Intent(util.AMR_FILTER);
 		//amrIntent.setClassName(util.AMR_PACKAGE_NAME, util.AMR_CLASS_NAME) ;
-		Log.d(util.TAG, "AMR Connection bind " + bindService(amrIntent, amrServiceConn, BIND_AUTO_CREATE));
-	}
-	
-	protected void onDestroy () {
-		super.onDestroy();
-		
-		unregisterReceiver () ;
-	}
-	
-	private void unregisterReceiver () {
-		// UnRegister Receiver
-		try {
-			if (recommedRecv != null) {
-				unregisterReceiver(recommedRecv);
-				recommedRecv = null ;
-			} 
-		} catch (IllegalArgumentException e) {
-			recommedRecv = null ;
-		}
+		Log.d(TAG, "AMR Connection bind " + bindService(amrIntent, amrServiceConn, BIND_AUTO_CREATE));
 	}
 }

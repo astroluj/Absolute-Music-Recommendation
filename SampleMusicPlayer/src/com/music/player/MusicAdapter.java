@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,8 @@ public class MusicAdapter extends BaseAdapter {
         String[] musicInfo = {MediaStore.Audio.Media._ID, 
                 MediaStore.Audio.Media.ALBUM_ID, 
                 MediaStore.Audio.Media.TITLE,
-                MediaStore.Audio.Media.ARTIST
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.IS_MUSIC
         } ;
 
         Cursor musicCursor = context.getContentResolver()
@@ -69,23 +71,29 @@ public class MusicAdapter extends BaseAdapter {
             int albumImageIDCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
             int musicTitleCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int musicArtistCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int musicDurationCol = musicCursor.getColumnIndex(MediaStore.Audio.Media.IS_MUSIC);
             
             do {
-                musicID = musicCursor.getString(musicIDCol) ;
-                albumImageID = musicCursor.getString(albumImageIDCol) ;
-                musicTitle = musicCursor.getString(musicTitleCol) ;
-                musicArtist = musicCursor.getString(musicArtistCol) ;
-                
-                // Media ID와 Album ID를 각각의 리스트에 저장해 둔다 
-                musicIDList.add(musicID);
-                albumImageList.add(albumImageID);
-                musicTitleList.add(musicTitle);
-                musicArtistList.add(musicArtist);
+            	try {
+            		// 짧은 음악 제외 시키기
+            		if (musicCursor.getInt(musicDurationCol) > 0) {
+		                musicID = musicCursor.getString(musicIDCol) ;
+		                albumImageID = musicCursor.getString(albumImageIDCol) ;
+		                musicTitle = musicCursor.getString(musicTitleCol) ;
+		                musicArtist = musicCursor.getString(musicArtistCol) ;
+		                
+		                // Media ID와 Album ID를 각각의 리스트에 저장해 둔다 
+		                musicIDList.add(musicID);
+		                albumImageList.add(albumImageID);
+		                musicTitleList.add(musicTitle);
+		                musicArtistList.add(musicArtist);
+            		}
+            	} catch (Exception e) {}
             }while (musicCursor.moveToNext());
         }
         // close cursor
         musicCursor.close();
-        
+  
         return;
     }
     
@@ -153,7 +161,7 @@ public class MusicAdapter extends BaseAdapter {
     }
     
     // MusicIDList GetSet
-    public ArrayList<String> getMusicIDListt () {
+    public ArrayList<String> getMusicIDList () {
     	return this.musicIDList ;
     }
     public void setMusicIDList (ArrayList<String> musicIDList) {
@@ -250,6 +258,8 @@ public class MusicAdapter extends BaseAdapter {
                  
                 return bitmap ;
             } catch (FileNotFoundException e) {
+            } catch (IllegalStateException e) {
+            	
             } finally {
                 try {
                     if (fileDescriptor != null)

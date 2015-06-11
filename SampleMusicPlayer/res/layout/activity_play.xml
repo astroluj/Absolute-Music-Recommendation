@@ -11,9 +11,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:gravity="center"
         android:paddingLeft="5dp"
         android:paddingRight="5dp" >
 
+        <!-- Song Aritst -->
+        <TextView
+            android:id="@+id/song_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFFFF"
+            android:textSize="15dp"
+            android:textStyle="bold" />
+        
         <!-- Song Title -->
         <TextView
             android:id="@+id/song_title"
@@ -36,6 +47,14 @@
         android:padding="10dp"
         android:scaleType="fitCenter" />
 
+	<!--  Recommend List -->    
+    <ListView
+        android:id="@+id/recommend_list_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="30"
+        android:scrollbars="none" />
+    
     <!-- Repeat / Shuffle buttons -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -47,26 +66,24 @@
 
         <!-- Repeat ImageButton -->
         <ImageButton
-            android:id="@+id/btn_repeat"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
             android:adjustViewBounds="true"
             android:background="@null"
             android:scaleType="fitCenter"
-            android:src="@drawable/repeat_button_selector"
+            android:src="@drawable/off_repeat_button_selector"
             android:onClick="repeatClick" />
 
         <!-- Random ImageButton -->
         <ImageButton
-            android:id="@+id/btn_random"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
             android:adjustViewBounds="true"
             android:background="@null"
             android:scaleType="fitCenter"
-            android:src="@drawable/random_button_selector" 
+            android:src="@drawable/off_random_button_selector" 
             android:onClick = "randomClick" />
     </LinearLayout>
 
@@ -74,7 +91,9 @@
     <SeekBar
         android:id="@+id/song_seekbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
 
     <!-- Timer Display -->
     <LinearLayout
@@ -97,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#FFFFFFFF"
-                android:textSize="10dp"
+                android:textSize="15dp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -114,7 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#FFFFFFFF"
-                android:textSize="10dp"
+                android:textSize="15dp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
@@ -122,9 +141,8 @@
     <!-- Player Footer -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="30"
-        android:gravity="bottom|center_horizontal"
         android:orientation="horizontal"
         android:weightSum="100" >
 
@@ -132,7 +150,6 @@
 
         <!-- Previous ImageButton -->
         <ImageButton
-            android:id="@+id/btn_previous"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
@@ -144,7 +161,6 @@
 
         <!-- Backward ImageButton -->
         <ImageButton
-            android:id="@+id/btn_reward"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
@@ -152,23 +168,21 @@
             android:background="@null"
             android:scaleType="fitCenter"
             android:src="@drawable/reward_button_selector" 
-            android:onClick = "rewardClick" />
+            android:onClick ="rewardClick" />
 
         <!-- Play ImageButton -->
         <ImageButton
-            android:id="@+id/btn_play_and_pause"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
             android:adjustViewBounds="true"
             android:background="@null"
             android:scaleType="fitCenter"
-            android:src="@drawable/stop_button_selector"
+            android:src="@drawable/play_button_selector"
             android:onClick = "playStopClick" />
 
         <!-- Forward ImageButton -->
         <ImageButton
-            android:id="@+id/btn_forward"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
@@ -180,7 +194,6 @@
 
         <!-- Next ImageButton -->
         <ImageButton
-            android:id="@+id/btn_next"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"
