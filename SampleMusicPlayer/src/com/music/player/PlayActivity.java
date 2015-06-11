@@ -2,12 +2,16 @@ package com.music.player;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.amr.aidl.amrAIDL;
+import com.amr.data.AMRRecommendResponseData;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -96,10 +100,9 @@ public class PlayActivity extends Activity {
 		}
 				
 		// Recommend Adatper
-		recommendAdapter = new RecommendAdapter () ;
+		recommendAdapter = new RecommendAdapter (getApplicationContext()) ;
 		// ListView
 		recommendListView = (ListView) findViewById (R.id.recommend_list_view) ;
-		recommendListView.setAdapter(recommendAdapter);
 		/* Listener for selecting a item */
 		recommendListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
@@ -189,10 +192,8 @@ public class PlayActivity extends Activity {
 			musicSeekbar.setProgress(0) ;
 			musicSeekbar.setMax(mediaPlayer.getDuration() / 1000) ;
 		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -388,6 +389,29 @@ public class PlayActivity extends Activity {
 			} 
 		} catch (IllegalArgumentException e) {
 			recommedRecv = null ;
+		}
+	}
+	
+	//Catch Recommendation list on Intent Action 
+	public class RecommendationReciever extends BroadcastReceiver {
+		
+		public void onReceive(Context context, Intent intent) {
+
+			ArrayList<AMRRecommendResponseData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
+			// Debug lists
+			recommendAdapter.clearAdapter() ;
+			if (lists == null || lists.size() == 0) {
+				recommendAdapter.putRecommendList(null, null, null, null);
+			}
+			else {
+				for (AMRRecommendResponseData list : lists) {
+					recommendAdapter.putRecommendList(
+							list.getTrackID(), list.getArtist(), 
+							list.getTitle(), list.getURL()) ;
+				}
+			}
+			// List View Shows
+			recommendListView.setAdapter(recommendAdapter);
 		}
 	}
 }

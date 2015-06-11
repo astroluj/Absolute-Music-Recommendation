@@ -476,8 +476,9 @@ int layout abc_search_view 0x7f030014
 int layout abc_simple_dropdown_hint 0x7f030015
 int layout activity_main 0x7f030016
 int layout activity_play 0x7f030017
-int layout item 0x7f030018
-int layout support_simple_spinner_dropdown_item 0x7f030019
+int layout music_item 0x7f030018
+int layout recommend_item 0x7f030019
+int layout support_simple_spinner_dropdown_item 0x7f03001a
 int menu main 0x7f0d0000
 int raw sample 0x7f050000
 int string abc_action_bar_home_description 0x7f0b0001

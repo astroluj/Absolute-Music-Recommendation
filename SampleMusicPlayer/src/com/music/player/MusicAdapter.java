@@ -13,7 +13,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,7 @@ public class MusicAdapter extends BaseAdapter {
     private ArrayList<String> musicTitleList;
     private ArrayList<String> musicArtistList;
     
-    MusicAdapter(Context context){
+    public MusicAdapter(Context context){
     	
     	this.context =  context ;
     	
@@ -183,7 +182,7 @@ public class MusicAdapter extends BaseAdapter {
         if (listViewItem == null) {
             // Item.xml을 Inflate해 Layout 구성된 View를 얻는다.
             LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            listViewItem = layoutInflater.inflate(R.layout.item, null);
+            listViewItem = layoutInflater.inflate(R.layout.music_item, null);
         }
         // Album Bitmap을 얻는다. 
         ImageView albumImageView = (ImageView) listViewItem.findViewById (R.id.album_image);
