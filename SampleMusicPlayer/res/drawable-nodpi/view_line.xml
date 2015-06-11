@@ -5,8 +5,7 @@
         <shape android:shape="line" >
             <stroke
                 android:width="3dp"
-                android:color="#FFFFFFFF" />
-
+                android:color="#FFBBBBBB" />
         </shape>
     </item>
 

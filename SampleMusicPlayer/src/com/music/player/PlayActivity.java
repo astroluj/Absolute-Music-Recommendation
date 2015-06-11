@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.amr.aidl.amrAIDL;
-import com.amr.data.AMRRecommendResponseData;
+import com.amr.data.AMRData;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -56,7 +56,7 @@ public class PlayActivity extends Activity {
 	private ListView recommendListView;
 	
 	// Widget
-	private TextView aritstTextView, titleTextView, currentTimeTextView, totalTimeTextView ;
+	private TextView titleTextView, currentTimeTextView, totalTimeTextView ;
 	private ImageView thumbnailImageView ;
 	private SeekBar musicSeekbar ;
 	
@@ -106,6 +106,19 @@ public class PlayActivity extends Activity {
 		/* Listener for selecting a item */
 		recommendListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
+            	
+            	// Music Pause
+            	playStopClick ((ImageView) findViewById (R.id.play_stop_btn)) ;
+            	
+            	// 유투브 연결
+            	try {
+	            	Intent intent =new Intent(
+	            			Intent.ACTION_VIEW,
+	            			Uri.parse(recommendAdapter.getMusicUri(position))) ; 
+	            	startActivity(intent) ;
+            	} catch (NullPointerException e) {
+            		Log.d (TAG, "Not-exist Recommend List") ;
+            	}
             }
         });
 		
@@ -120,7 +133,6 @@ public class PlayActivity extends Activity {
 		maxMusicCount = musicAdapter.getMusicIDList().size() ;
 		
 		// Init Widget
-		aritstTextView = (TextView) findViewById (R.id.song_artist) ;
 		titleTextView = (TextView) findViewById (R.id.song_title) ;
 		currentTimeTextView = (TextView) findViewById (R.id.song_current_time) ;
 		totalTimeTextView = (TextView) findViewById (R.id.song_total_time) ;
@@ -148,30 +160,42 @@ public class PlayActivity extends Activity {
 			public void onCompletion(MediaPlayer mp) {
 				
 				// On Repeat
-				if (repeatFlag == true) 
-					playMusic (currentPosition) ;
+				if (repeatFlag == true) {
+
+					Uri musicUri = getMusicUri(currentPosition) ;
+					playMusic (musicUri) ;
+					requestRecommendList(musicUri) ;
+				}
 				// On Random
-				else if (randomFlag == true) 
-					playMusic (new Random ().nextInt(maxMusicCount)) ;
+				else if (randomFlag == true) {
+
+					Uri musicUri = getMusicUri(new Random ().nextInt(maxMusicCount)) ;
+					playMusic (musicUri) ;
+					requestRecommendList(musicUri) ;
+				}
 				// Off Repeat, Random
-				else 
-					playMusic (getMusicPosition (util.INCREASE)) ;
+				else {
+					Uri musicUri = getMusicUri(getMusicPosition (util.INCREASE)) ;
+					playMusic (musicUri) ;
+					requestRecommendList(musicUri) ;
+				}
 			}
 		});
-		playMusic (currentPosition) ;
+		
+		playMusic (getMusicUri(currentPosition)) ;
 	}
 	
-	private void playMusic (int position) {
-		
-		Log.d (TAG, "Position : " + position) ;
-		
-		Uri musicURI = Uri.withAppendedPath(
+	private Uri getMusicUri (int position) {
+		return Uri.withAppendedPath(
 				MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "" + musicAdapter.getMusicID(position)); 
+	}
+	
+	private void playMusic (Uri musicUri) {
 
 		// Start Music
 		try {
 			mediaPlayer.reset() ;
-			mediaPlayer.setDataSource(getApplicationContext(), musicURI) ;
+			mediaPlayer.setDataSource(getApplicationContext(), musicUri) ;
 			mediaPlayer.prepare() ;
 			mediaPlayer.start() ;
 			
@@ -180,10 +204,8 @@ public class PlayActivity extends Activity {
 			setMusicSeekBarThread() ;
 			
 			// Set Title and thumbnail
-			String artist = musicAdapter.getMusicArtist(currentPosition),
-					title = musicAdapter.getMusicTitle(currentPosition) ;
+			String title = musicAdapter.getMusicTitle(currentPosition) ;
 			
-			aritstTextView.setText((artist == null) ? "" : artist + " - ") ;
 			titleTextView.setText((title == null) ? "" :  title) ;
 			thumbnailImageView.setImageBitmap(musicAdapter.getAlbumImage(currentPosition)) ;
 			
@@ -196,20 +218,6 @@ public class PlayActivity extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		// Call AIDL
-		try {
-			aidlAMRService.getKeywordToRecommendLists(musicURI.toString(), 
-					util.MUSIC_RECOMMEND_RESPONSE_FILTER,
-					musicAdapter.getMusicArtist(currentPosition),
-					musicAdapter.getMusicTitle(currentPosition), 5) ;
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		//aidlMediaService.open(new long [] {id}, 0);
-		//aidlMediaService.play();
 	}
 	
 	private void serviceConnection () {
@@ -221,13 +229,33 @@ public class PlayActivity extends Activity {
 
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				aidlAMRService = amrAIDL.Stub.asInterface(service);
+				// 시작 노래 추천 곡 찾기
+				requestRecommendList (getMusicUri(currentPosition)) ;
 				Log.i(TAG + "AMR", "Connected!");
 			}
 		};
 	}
 	
+	private void requestRecommendList (Uri musicUri) {
+		// Call AIDL
+		try {
+			aidlAMRService.getKeywordToRecommendLists(musicUri.toString(), 
+					util.MUSIC_RECOMMEND_RESPONSE_FILTER,
+					musicAdapter.getMusicArtist(currentPosition),
+					musicAdapter.getMusicTitle(currentPosition), 5) ;
+			
+			//aidlAMRService.setUserRegistered(null, "test") ;
+			//aidlAMRService.getReview(util.MUSIC_RECOMMEND_RESPONSE_FILTER, 0, 5);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//aidlMediaService.open(new long [] {id}, 0);
+		//aidlMediaService.play();
+	}
+	
 	// Seek Bar controll
-
 	private void setMusicSeekBarThread () {
 		
 		musicSeekBarThread = new MusicSeekBarThread (musicSeekBarHandler) ;
@@ -280,13 +308,19 @@ public class PlayActivity extends Activity {
 	// Music Previous Play
 	public void previousClick (View v) {
 		currentPosition = getMusicPosition (util.DECREASE) ;
-		playMusic (currentPosition) ;
+
+		Uri musicUri = getMusicUri(currentPosition) ;
+		playMusic (musicUri) ;
+		requestRecommendList(musicUri) ;
 	}
 	
 	// Music Next Play
 	public void nextClick (View v) {
 		currentPosition = getMusicPosition (util.INCREASE) ;
-		playMusic (currentPosition) ;
+		
+		Uri musicUri = getMusicUri(currentPosition) ;
+		playMusic (musicUri) ;
+		requestRecommendList(musicUri) ;
 	}
 	
 	// Music ReWard 15 Second
@@ -397,14 +431,14 @@ public class PlayActivity extends Activity {
 		
 		public void onReceive(Context context, Intent intent) {
 
-			ArrayList<AMRRecommendResponseData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
+			ArrayList<AMRData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
 			// Debug lists
 			recommendAdapter.clearAdapter() ;
 			if (lists == null || lists.size() == 0) {
 				recommendAdapter.putRecommendList(null, null, null, null);
 			}
 			else {
-				for (AMRRecommendResponseData list : lists) {
+				for (AMRData list : lists) {
 					recommendAdapter.putRecommendList(
 							list.getTrackID(), list.getArtist(), 
 							list.getTitle(), list.getURL()) ;

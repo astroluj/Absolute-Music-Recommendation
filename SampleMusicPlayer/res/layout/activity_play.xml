@@ -16,41 +16,36 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp" >
 
-        <!-- Song Aritst -->
-        <TextView
-            android:id="@+id/song_artist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFFFF"
-            android:textSize="15dp"
-            android:textStyle="bold" />
-        
         <!-- Song Title -->
         <TextView
             android:id="@+id/song_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#FFFFFFFF"
-            android:textSize="15dp"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <!-- Playlist button -->
     </LinearLayout>
 
     <!-- Song Thumbnail Image -->
-    <ImageView
-        android:id="@+id/song_thumbnail_image"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="40"
-        android:adjustViewBounds="true"
-        android:padding="10dp"
-        android:scaleType="fitCenter" />
-
+        android:layout_weight="40" >
+	    <ImageView
+	        android:id="@+id/song_thumbnail_image"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:adjustViewBounds="true"
+	        android:padding="10dp"
+	        android:scaleType="fitCenter" />
+	</LinearLayout>
+	
 	<!--  Recommend List -->    
     <ListView
         android:id="@+id/recommend_list_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="30"
         android:scrollbars="none" />
@@ -116,7 +111,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#FFFFFFFF"
-                android:textSize="15dp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -133,7 +128,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#FFFFFFFF"
-                android:textSize="15dp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
@@ -172,6 +167,7 @@
 
         <!-- Play ImageButton -->
         <ImageButton
+            android:id ="@+id/play_stop_btn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="20"

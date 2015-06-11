@@ -1,8 +1,6 @@
 package com.music.player;
 
 
-import com.amr.aidl.amrAIDL;
-
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -25,10 +23,6 @@ public class MainActivity extends Activity {
 	// Custom Class
 	private MusicAdapter musicAdapter;
 	
-	// AMRAIDL
-	private amrAIDL aidlAMRService ;
-	private ServiceConnection amrServiceConn ;
-		
 	private ListView musicListView;
 	
 	@Override
@@ -37,27 +31,9 @@ public class MainActivity extends Activity {
 
 		//set the layout of the Activity
 		setContentView(R.layout.activity_main) ;
-
-		// TODO : 필수
-		// AIDL SET
-		serviceConnection () ;
 				
 		//initialize views
 		initializes();
-	}
-	
-	private void serviceConnection () {
-		amrServiceConn = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) {
-				aidlAMRService = null ;
-				Log.i(TAG + "AMR", "Disconnected!");
-			}
-
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				aidlAMRService = amrAIDL.Stub.asInterface(service);
-				Log.i(TAG + "AMR", "Connected!");
-			}
-		};
 	}
 	
 	private void initializes(){
@@ -94,22 +70,6 @@ public class MainActivity extends Activity {
     		e.printStackTrace();
     		Log.e (TAG, "ActivityNotFoundException") ;
     	}
-    	
-		// Call AIDL
-		try {
-			Uri musicURI = Uri.withAppendedPath(
-					MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "" + musicAdapter.getMusicID(position)); 
-			aidlAMRService.getKeywordToRecommendLists(musicURI.toString(), 
-					util.MUSIC_RECOMMEND_RESPONSE_FILTER,
-					musicAdapter.getMusicArtist(position),
-					musicAdapter.getMusicTitle(position), 5) ;
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		}
-		//aidlMediaService.open(new long [] {id}, 0);
-		//aidlMediaService.play();
     }
 	
 	protected void onActivityResult (int requestCode, int resultCode, Intent intent) {
@@ -120,21 +80,5 @@ public class MainActivity extends Activity {
 				
 			}
 		}
-	}
-	
-	protected void onPause () {
-		super.onPause() ;
-		
-		// AIDL disable
-		unbindService(amrServiceConn);
-	}
-
-	protected void onResume() {
-		super.onResume();
-
-		// AIDL enable
-		Intent amrIntent = new Intent(util.AMR_FILTER);
-		//amrIntent.setClassName(util.AMR_PACKAGE_NAME, util.AMR_CLASS_NAME) ;
-		Log.d(TAG, "AMR Connection bind " + bindService(amrIntent, amrServiceConn, BIND_AUTO_CREATE));
 	}
 }
