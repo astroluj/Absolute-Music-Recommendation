@@ -3,6 +3,7 @@ package com.amr.service;
 
 import com.amr.aidl.amrAIDL;
 import com.amr.data.AMRRecommendRequestData;
+import com.amr.data.UserData;
 import com.amr.thread.NetworkThread;
 import com.amr.util.util;
 
@@ -36,7 +37,65 @@ public class AMRService extends Service {
 					if (networkThread != null)
 						releaseNetworkThread();
 					
-					startNetworkThread(recvAction, new AMRRecommendRequestData (null, null, artist, title, util.START_INDEX, count)) ;
+					startNetworkThread(recvAction,
+							new AMRRecommendRequestData (null, null, artist, title, null,
+							null,
+							util.START_INDEX, count)) ;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void setUserRegistered(String recvAction, String user_id)
+					throws RemoteException {
+
+				Log.d (util.TAG, "called setUserRegistered function") ;
+				try {
+					if (networkThread != null)
+						releaseNetworkThread();
+					
+					startNetworkThread(recvAction,
+							new AMRRecommendRequestData (null, null, null, null,  null,
+							new UserData (user_id, true),
+							null, null)) ;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void setUserUnregistered(String recvAction, String user_id)
+					throws RemoteException {
+
+				Log.d (util.TAG, "called setUserUnregistered function") ;
+				try {
+					if (networkThread != null)
+						releaseNetworkThread();
+					
+					startNetworkThread(recvAction,
+							new AMRRecommendRequestData (null, null, null, null, null,
+							new UserData (user_id, false),
+							null, null)) ;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void setUserPlay(String recvAction, String user_id,
+					String artist, String title, String album)
+					throws RemoteException {
+
+				Log.d (util.TAG, "called setUserPlay function") ;
+				try {
+					if (networkThread != null)
+						releaseNetworkThread();
+					
+					startNetworkThread(recvAction,
+							new AMRRecommendRequestData (null, null, artist, title, album, 
+							new UserData (user_id, true),
+							null, null)) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

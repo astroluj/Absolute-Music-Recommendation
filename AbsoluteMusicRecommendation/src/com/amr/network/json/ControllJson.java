@@ -7,7 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.amr.data.AMRRecommendRequestData;
-import com.amr.data.AMRRecommendResponseData;
+import com.amr.data.AMRData;
 import com.amr.util.util;
 
 public class ControllJson {
@@ -15,40 +15,6 @@ public class ControllJson {
 	// Music/Search Json
 	// Music/Similar Json
 	// Music/Recommend Json
-	protected String makeJson (String feature, String track_id,
-			String artist, String title, 
-			Integer startIndex, Integer count) {
-		
-		String jsonMsg = "" ;
-		
-		try {
-			JSONObject jsonObject = new JSONObject() ;
-			
-			if (feature != null) 
-				jsonObject.put(util.FEATURE, feature) ;
-			
-			if (track_id != null)
-				jsonObject.put(util.TRACK_ID, track_id) ;
-			
-			if (artist != null)
-				jsonObject.put(util.ARTIST, artist) ;
-			
-			if (title != null)
-				jsonObject.put(util.TITLE, title) ;
-			
-			if (startIndex != null) 
-				jsonObject.put(util.START, startIndex) ;
-			
-			if (count != null)
-				jsonObject.put(util.COUNT, count) ;
-
-			jsonMsg = jsonObject.toString() ;
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		return jsonMsg ;
-	}
 	
 	protected String makeJson (AMRRecommendRequestData amrData) {
 		
@@ -69,6 +35,12 @@ public class ControllJson {
 			if (amrData.getTitle() != null)
 				jsonObject.put(util.TITLE, amrData.getTitle()) ;
 			
+			if (amrData.getAlbum() != null)
+				jsonObject.put(util.ALBUM, amrData.getAlbum()) ;
+			
+			if (amrData.getUserData() != null) 
+				jsonObject.put(util.USER_ID, amrData.getUserData().getUserID()) ;
+			
 			if (amrData.getStartIndex() != null) 
 				jsonObject.put(util.START, amrData.getStartIndex()) ;
 			
@@ -84,11 +56,11 @@ public class ControllJson {
 	}
 	
 	// Paser
-	protected ArrayList<AMRRecommendResponseData> responsePaser (String responseMsg) {
+	protected ArrayList<AMRData> responsePaser (String responseMsg) {
 		
 		try {
 			// Init Response message Keys containers
-			ArrayList<AMRRecommendResponseData> paserArray = new ArrayList<AMRRecommendResponseData> () ;
+			ArrayList<AMRData> paserArray = new ArrayList<AMRData> () ;
 			
 			JSONObject jsonObject = new JSONObject(responseMsg) ;
 			JSONArray jsonArray = jsonObject.getJSONArray(util.TRACKS) ;
@@ -97,7 +69,7 @@ public class ControllJson {
 				
 				JSONObject paserData = jsonArray.getJSONObject(i) ;
 				
-				AMRRecommendResponseData ResponsePaserData = new AMRRecommendResponseData () ;
+				AMRData ResponsePaserData = new AMRData () ;
 				
 				// Keys Paser
 				try {
@@ -131,10 +103,23 @@ public class ControllJson {
 				}
 				
 				try {
+					ResponsePaserData.setTimeStampe(paserData.getString(util.TIME_STAMP));
+				} catch (JSONException e) {
+					ResponsePaserData.setTimeStampe(null) ;
+				}
+				
+				try {
+					ResponsePaserData.setContent(paserData.getString(util.CONTENT));
+				} catch (JSONException e) {
+					ResponsePaserData.setContent(null) ;
+				}
+				
+				try {
 					ResponsePaserData.setScore(paserData.getString(util.SCORE)) ;
 				} catch (JSONException e) {
 					ResponsePaserData.setScore(null) ;
 				}
+				
 				
 				// add Pasing Datas
 				paserArray.add(ResponsePaserData) ;

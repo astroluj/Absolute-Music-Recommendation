@@ -2,7 +2,10 @@ package com.amr.data;
 
 public class AMRRecommendRequestData {
 
-	private String feature, track_id, artist, title ;
+	// Cusmtom Class
+	private UserData userData ;
+	
+	private String feature, track_id, artist, title, album ;
 	private Integer startIndex, count ;
 	
 	// Constructor
@@ -13,24 +16,33 @@ public class AMRRecommendRequestData {
 		this.track_id =  "" ;
 		this.artist = "" ;
 		this.title = "" ;
+		this.album = "" ;
+		
+		this.userData = new UserData () ;
 		
 		// Integer
 		this.startIndex = 0 ;
 		this.count = 0 ;
 	}
 	
-	public AMRRecommendRequestData (String feature, String track_id, String artist, String title,
+	public AMRRecommendRequestData (String feature, String track_id,
+			String artist, String title, String album, UserData userData,
 			Integer startIndex, Integer count) {
 		// String
 		this.feature = feature ;
 		this.track_id =  track_id ;
 		this.artist = artist ;
 		this.title = title ;
+		this.album = album ;
+		
+		// UserData
+		this.userData = userData ;
 		
 		// Integer
 		this.startIndex = startIndex ;
 		this.count = count ;
 	}
+
 	
 	public AMRRecommendRequestData (AMRRecommendRequestData amrData) {
 		// String
@@ -38,6 +50,10 @@ public class AMRRecommendRequestData {
 		this.track_id =  amrData.getTrackID() ;
 		this.artist = amrData.getArtist() ;
 		this.title = amrData.getTitle() ;
+		this.album = amrData.getAlbum () ;
+		
+		// UserData
+		this.userData = amrData.getUserData() ;
 		
 		// Integer
 		this.startIndex = amrData.getStartIndex() ;
@@ -74,6 +90,22 @@ public class AMRRecommendRequestData {
 	}
 	public void setTitle (String title) {
 		this.title = title ;
+	}
+	
+	// Album GetSEt 
+	public String getAlbum () {
+		return this.album ;
+	}
+	public void setAlbum (String album) {
+		this.album = album ;
+	}
+	
+	// User ID GetSet
+	public UserData getUserData () {
+		return this.userData ;
+	}
+	public void setUserData (UserData userData) {
+		this.userData = userData ;
 	}
 	
 	// startIndex GetSet

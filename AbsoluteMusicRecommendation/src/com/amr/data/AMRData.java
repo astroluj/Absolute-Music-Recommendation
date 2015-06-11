@@ -3,37 +3,39 @@ package com.amr.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class AMRRecommendResponseData implements Parcelable {
+public class AMRData implements Parcelable {
 
-	private String track_id, artist, title, album, url, score  ;
+	private String track_id, artist, title, album, url, score, timeStamp, content  ;
 	
-	public static final Parcelable.Creator<AMRRecommendResponseData> CREATOR = new Parcelable.Creator<AMRRecommendResponseData> () {
+	public static final Parcelable.Creator<AMRData> CREATOR = new Parcelable.Creator<AMRData> () {
 
 		@Override
-		public AMRRecommendResponseData createFromParcel(Parcel source) {
-			return new AMRRecommendResponseData (source) ;
+		public AMRData createFromParcel(Parcel source) {
+			return new AMRData (source) ;
 		}
 
 		@Override
-		public AMRRecommendResponseData[] newArray(int size) {
-			return new AMRRecommendResponseData[size] ;
+		public AMRData[] newArray(int size) {
+			return new AMRData[size] ;
 		}
 	} ;
 	
 	// Constructor
-	public AMRRecommendResponseData () {
+	public AMRData () {
 		// String
 		this.track_id = "" ;
 		this.artist = "" ;
 		this.title = "" ;
 		this.album = "" ;
 		this.url = "" ;
+		this.timeStamp = "" ;
+		this.content = "" ;
 		
 		// Float .2f
 		this.score = "" ;
 	}
 	
-	public AMRRecommendResponseData (AMRRecommendResponseData recommendData) {
+	public AMRData (AMRData recommendData) {
 		// String
 		this.track_id = recommendData.getTrackID() ;
 		this.artist = recommendData.getArtist() ;
@@ -41,11 +43,17 @@ public class AMRRecommendResponseData implements Parcelable {
 		this.album = recommendData.getAlbum() ;
 		this.url = recommendData.getURL() ;
 		
+		this.timeStamp = recommendData.getTimeStamp() ;
+		this.content = recommendData.getContent() ;
+		
 		// Float .2f
 		this.score = recommendData.getScore() ;
 	}
 	
-	public AMRRecommendResponseData (String track_id, String artist, String title, String album, String url, String score) {
+	public AMRData (String track_id, String artist,
+			String title, String album,
+			String url, String score,
+			String timeStamp, String content) {
 		// String
 		this.track_id = track_id ;
 		this.artist = artist ;
@@ -53,17 +61,23 @@ public class AMRRecommendResponseData implements Parcelable {
 		this.album = album ;
 		this.url = url ;
 		
+		this.timeStamp = timeStamp ;
+		this.content = content ;
+		
 		// Float .2f
 		this.score = score ;		
 	}
 	
-	public AMRRecommendResponseData (Parcel source) {
+	public AMRData (Parcel source) {
 		// String
 		this.track_id = source.readString() ;
 		this.artist = source.readString() ;
 		this.title = source.readString() ;
 		this.album = source.readString() ;
 		this.url = source.readString() ;
+		
+		this.timeStamp = source.readString() ;
+		this.content = source.readString() ;
 		
 		// Float .2f
 		this.score = source.readString() ;
@@ -114,6 +128,24 @@ public class AMRRecommendResponseData implements Parcelable {
 		this.url = url ;
 	}
 	
+	// Get timeStamp
+	public String getTimeStamp () {
+		return this.timeStamp ;
+	}
+	// Set timeStatmp
+	public void  setTimeStampe (String timeStamp) {
+		this.timeStamp = timeStamp ;
+	}
+	
+	// Get content
+	public String getContent () {
+		return this.content ;
+	}
+	// Set Content
+	public void setContent (String content) {
+		this.content = content ;
+	}
+	
 	// Get score
 	public String getScore () {
 		return this.score ;
@@ -141,6 +173,8 @@ public class AMRRecommendResponseData implements Parcelable {
 		dest.writeString(this.title) ;
 		dest.writeString(this.album) ;
 		dest.writeString(this.url) ;
+		dest.writeString(this.timeStamp);
+		dest.writeString(this.content);
 		dest.writeString(this.score) ;
 	}
 }

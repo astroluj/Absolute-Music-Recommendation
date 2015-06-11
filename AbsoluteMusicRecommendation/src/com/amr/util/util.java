@@ -15,6 +15,10 @@ public class util {
 	public final static String URL_SEARCH = "http://52.68.14.38/soundnerd/music/search" ;
 	public final static String URL_SIMILAR = "http://52.68.14.38/soundnerd/music/similar" ;
 	public final static String URL_RECOMMEND = "http://52.68.14.38/soundnerd/music/recommend" ;
+	public final static String URL_USER_REGISTER = "http://52.68.14.38/soundnerd/user/regitser" ;
+	public final static String URL_USER_REMOVE = "http://52.68.14.38/soundnerd/user/remove" ;
+	public final static String URL_USER_PLAY = "http://52.68.14.38/soundnerd/user/play" ;
+	
 	public final static String POST = "POST" ;
 	public final static String UTF_8 = "UTF-8" ;
 	
@@ -27,8 +31,11 @@ public class util {
 	public final static String START = "start" ;
 	public final static String COUNT = "count" ;
 	public final static String TRACK_ID = "track_id" ;
+	public final static String USER_ID = "user_id" ;
 	public final static String ALBUM = "album" ;
 	public final static String URL = "url" ;
+	public final static String TIME_STAMP = "timestamp" ;
+	public final static String CONTENT = "content" ;
 	public final static String SCORE = "score" ;
 	
 	// JSON Value

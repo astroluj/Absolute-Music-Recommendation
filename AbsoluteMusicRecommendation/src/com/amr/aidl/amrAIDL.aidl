@@ -4,4 +4,7 @@ interface amrAIDL {
 	
 	void getKeywordToRecommendLists (String uri, String recvAction, String artist, String title, int count) ;
 	
+	void setUserRegistered (String recvAction, String user_id) ;
+	void setUserUnregistered (String recvAction, String user_id) ;
+	void setUserPlay (String recvAction, String user_id, String artist, String title, String album) ;
 }
