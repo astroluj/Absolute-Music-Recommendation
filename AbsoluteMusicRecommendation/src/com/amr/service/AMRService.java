@@ -38,9 +38,9 @@ public class AMRService extends Service {
 						releaseNetworkThread();
 					
 					startNetworkThread(recvAction,
-							new AMRRecommendRequestData (null, null, artist, title, null,
+							new AMRRecommendRequestData (null, null, artist, title, null, null,
 							null,
-							util.START_INDEX, count)) ;
+							util.START_INDEX, count), util.MUSIC_SEARCH) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -56,9 +56,9 @@ public class AMRService extends Service {
 						releaseNetworkThread();
 					
 					startNetworkThread(recvAction,
-							new AMRRecommendRequestData (null, null, null, null,  null,
+							new AMRRecommendRequestData (null, null, null, null,  null, null,
 							new UserData (user_id, true),
-							null, null)) ;
+							null, null), util.USER_REGISTER) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -74,9 +74,9 @@ public class AMRService extends Service {
 						releaseNetworkThread();
 					
 					startNetworkThread(recvAction,
-							new AMRRecommendRequestData (null, null, null, null, null,
+							new AMRRecommendRequestData (null, null, null, null, null, null,
 							new UserData (user_id, false),
-							null, null)) ;
+							null, null), util.USER_REMOVE) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -93,12 +93,67 @@ public class AMRService extends Service {
 						releaseNetworkThread();
 					
 					startNetworkThread(recvAction,
-							new AMRRecommendRequestData (null, null, artist, title, album, 
+							new AMRRecommendRequestData (null, null, artist, title, album, null,
 							new UserData (user_id, true),
-							null, null)) ;
+							null, null), util.USER_PLAY) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			}
+
+			@Override
+			public void setReview(String recvAction, String user_id,
+					String track_id, String content) throws RemoteException {
+
+				Log.d (util.TAG, "called setReview function") ;
+				try {
+					if (networkThread != null)
+						releaseNetworkThread();
+					
+					startNetworkThread(recvAction,
+							new AMRRecommendRequestData (null, track_id, null, null, null, content,
+							new UserData (user_id, true),
+							null, null), util.REVIEW_WRITE) ;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void getReview(String recvAction, int start, int count)
+					throws RemoteException {
+
+				Log.d (util.TAG, "called getReview function") ;
+				try {
+					if (networkThread != null)
+						releaseNetworkThread();
+					
+					startNetworkThread(recvAction,
+							new AMRRecommendRequestData (null, null, null, null, null, null,
+							null,
+							start, count), util.MUSIC_REVIEW) ;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void getUserReview(String recvAction, int start, int count)
+					throws RemoteException {
+
+				Log.d (util.TAG, "called getUserReview function") ;
+				try {
+					if (networkThread != null)
+						releaseNetworkThread();
+					
+					startNetworkThread(recvAction,
+							new AMRRecommendRequestData (null, null, null, null, null, null,
+							null,
+							start, count), util.USER_REVIEW) ;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 			}
 		} ;
 	}
@@ -113,9 +168,11 @@ public class AMRService extends Service {
 	}
 
 	// NetworkThread Create & Release
-	private void startNetworkThread (String recvAction, AMRRecommendRequestData amrData) {
+	private void startNetworkThread (String recvAction,
+			AMRRecommendRequestData amrData, int CASE) {
+		
 		networkThread =new NetworkThread (getApplicationContext(), networkHandlerCallback,
-				recvAction, amrData) ;
+				recvAction, amrData, CASE) ;
 		
 		networkThread.setDaemon(true) ;
 		networkThread.start() ;

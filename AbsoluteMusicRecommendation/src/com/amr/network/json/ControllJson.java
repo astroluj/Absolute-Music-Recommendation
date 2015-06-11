@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import com.amr.data.AMRRecommendRequestData;
 import com.amr.data.AMRData;
+import com.amr.data.TrackData;
 import com.amr.util.util;
 
 public class ControllJson {
@@ -38,6 +39,9 @@ public class ControllJson {
 			if (amrData.getAlbum() != null)
 				jsonObject.put(util.ALBUM, amrData.getAlbum()) ;
 			
+			if (amrData.getContent() != null)
+				jsonObject.put(util.CONTENT, amrData.getContent()) ;
+			
 			if (amrData.getUserData() != null) 
 				jsonObject.put(util.USER_ID, amrData.getUserData().getUserID()) ;
 			
@@ -63,7 +67,14 @@ public class ControllJson {
 			ArrayList<AMRData> paserArray = new ArrayList<AMRData> () ;
 			
 			JSONObject jsonObject = new JSONObject(responseMsg) ;
-			JSONArray jsonArray = jsonObject.getJSONArray(util.TRACKS) ;
+			JSONArray jsonArray = null ;
+			try {
+				jsonObject.getJSONArray(util.TRACKS) ;
+			} catch (JSONException e) {
+				try {
+					jsonObject.getJSONArray(util.REVIEWS) ;
+				} catch (JSONException e2) {}
+			}
 
 			for (int i = 0, size = jsonArray.length() ; i < size ; i++) {
 				
@@ -76,6 +87,12 @@ public class ControllJson {
 					ResponsePaserData.setTrackID(paserData.getString(util.TRACK_ID)) ;
 				} catch (JSONException e) {
 					ResponsePaserData.setTrackID(null) ;
+				}
+				
+				try {
+					ResponsePaserData.setUserID (paserData.getString(util.USER_ID)) ;
+				} catch (JSONException e) {
+					ResponsePaserData.setUserID(null) ;
 				}
 				
 				try {
@@ -120,13 +137,51 @@ public class ControllJson {
 					ResponsePaserData.setScore(null) ;
 				}
 				
+				try {
+					// Init Response message Keys containers
+					ArrayList<TrackData> subPaserArray = new ArrayList<TrackData> () ;
+					
+					JSONArray subJsonArray = paserData.getJSONArray(util.TRACKS) ;
+					
+					for (int j = 0, subSize = jsonArray.length() ; j < subSize ; j++) {
+						
+						JSONObject subPaserData = subJsonArray.getJSONObject(i) ;
+						
+						TrackData trackData = new TrackData () ;
+						
+						try {
+							trackData.setTrackID(subPaserData.getString(util.TRACK_ID)) ;
+						} catch (JSONException e) {
+							trackData.setTrackID(null) ;
+						}
+						
+						try {
+							trackData.setArtist(subPaserData.getString(util.ARTIST)) ;
+						} catch (JSONException e) {
+							trackData.setArtist(null) ;
+						}
+						
+						try {
+							trackData.setTitle(subPaserData.getString(util.TITLE)) ;
+						} catch (JSONException e) {
+							trackData.setTitle(null) ;
+						}
+						
+						// add Pasing Datas
+						subPaserArray.add(trackData) ;
+					}
+					
+					ResponsePaserData.setTrack(subPaserArray) ;
+				} catch (JSONException e) {
+					ResponsePaserData.setTrack(null) ;
+				}
 				
 				// add Pasing Datas
 				paserArray.add(ResponsePaserData) ;
 			}
 			
 			return paserArray ;
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 
 			return null ;

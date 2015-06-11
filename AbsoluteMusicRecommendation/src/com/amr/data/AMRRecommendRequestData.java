@@ -5,7 +5,7 @@ public class AMRRecommendRequestData {
 	// Cusmtom Class
 	private UserData userData ;
 	
-	private String feature, track_id, artist, title, album ;
+	private String feature, track_id, artist, title, album, content ;
 	private Integer startIndex, count ;
 	
 	// Constructor
@@ -17,6 +17,7 @@ public class AMRRecommendRequestData {
 		this.artist = "" ;
 		this.title = "" ;
 		this.album = "" ;
+		this.content = "" ;
 		
 		this.userData = new UserData () ;
 		
@@ -26,7 +27,7 @@ public class AMRRecommendRequestData {
 	}
 	
 	public AMRRecommendRequestData (String feature, String track_id,
-			String artist, String title, String album, UserData userData,
+			String artist, String title, String album, String content, UserData userData,
 			Integer startIndex, Integer count) {
 		// String
 		this.feature = feature ;
@@ -34,6 +35,7 @@ public class AMRRecommendRequestData {
 		this.artist = artist ;
 		this.title = title ;
 		this.album = album ;
+		this.content = content ;
 		
 		// UserData
 		this.userData = userData ;
@@ -51,6 +53,7 @@ public class AMRRecommendRequestData {
 		this.artist = amrData.getArtist() ;
 		this.title = amrData.getTitle() ;
 		this.album = amrData.getAlbum () ;
+		this.content = amrData.getContent () ;
 		
 		// UserData
 		this.userData = amrData.getUserData() ;
@@ -98,6 +101,14 @@ public class AMRRecommendRequestData {
 	}
 	public void setAlbum (String album) {
 		this.album = album ;
+	}
+	
+	// Content GetSet
+	public String getContent () {
+		return this.content ;
+	}
+	public void setContent (String content) {
+		this.content = content ;
 	}
 	
 	// User ID GetSet

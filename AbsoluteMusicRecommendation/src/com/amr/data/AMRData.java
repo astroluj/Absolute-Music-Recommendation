@@ -1,11 +1,16 @@
 package com.amr.data;
 
+import java.util.ArrayList;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class AMRData implements Parcelable {
 
-	private String track_id, artist, title, album, url, score, timeStamp, content  ;
+	// Custom Class
+	private ArrayList<TrackData> trackData ;
+	
+	private String track_id, user_id, artist, title, album, url, score, timeStamp, content  ;
 	
 	public static final Parcelable.Creator<AMRData> CREATOR = new Parcelable.Creator<AMRData> () {
 
@@ -22,8 +27,13 @@ public class AMRData implements Parcelable {
 	
 	// Constructor
 	public AMRData () {
+		// TrackData
+		this.trackData = new ArrayList<TrackData> () ;
+		
 		// String
 		this.track_id = "" ;
+		this.user_id = "" ;
+		
 		this.artist = "" ;
 		this.title = "" ;
 		this.album = "" ;
@@ -36,8 +46,13 @@ public class AMRData implements Parcelable {
 	}
 	
 	public AMRData (AMRData recommendData) {
+		// TrackData
+		this.trackData = recommendData.getTrack() ;
+		
 		// String
 		this.track_id = recommendData.getTrackID() ;
+		this.user_id = recommendData.getUserID () ;
+		
 		this.artist = recommendData.getArtist() ;
 		this.title = recommendData.getTitle() ;
 		this.album = recommendData.getAlbum() ;
@@ -50,12 +65,18 @@ public class AMRData implements Parcelable {
 		this.score = recommendData.getScore() ;
 	}
 	
-	public AMRData (String track_id, String artist,
-			String title, String album,
+	public AMRData (ArrayList<TrackData> trackData, String track_id, String user_id,
+			String artist, String title, String album,
 			String url, String score,
 			String timeStamp, String content) {
+		
+		// TrackData
+		this.trackData = trackData ;
+		
 		// String
 		this.track_id = track_id ;
+		this.user_id = user_id ;
+		
 		this.artist = artist ;
 		this.title = title ;
 		this.album = album ;
@@ -69,8 +90,13 @@ public class AMRData implements Parcelable {
 	}
 	
 	public AMRData (Parcel source) {
+		// TrackData
+		this.trackData = source.readArrayList(TrackData.class.getClassLoader()) ;
+				
 		// String
 		this.track_id = source.readString() ;
+		this.user_id = source.readString() ;
+		
 		this.artist = source.readString() ;
 		this.title = source.readString() ;
 		this.album = source.readString() ;
@@ -83,6 +109,15 @@ public class AMRData implements Parcelable {
 		this.score = source.readString() ;
 	}
 	
+	// Get TrackData
+	public ArrayList<TrackData> getTrack() {
+		return this.trackData ;
+	}
+	// Set TrackData
+	public void setTrack (ArrayList<TrackData> trackData) {
+		this.trackData = trackData ;
+	}
+	
 	// Get track_id
 	public String getTrackID () {
 		return this.track_id ;
@@ -92,6 +127,15 @@ public class AMRData implements Parcelable {
 		this.track_id = track_id ;
 	}
 	
+	// Get track_id
+	public String getUserID () {
+		return this.user_id ;
+	}
+	// Set track_id
+	public void setUserID (String user_id) {
+		this.user_id = user_id ;
+	}
+		
 	// Get artist
 	public String getArtist () {
 		return this.artist ;
@@ -168,7 +212,9 @@ public class AMRData implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 
+		dest.writeTypedList(this.trackData);
 		dest.writeString(this.track_id) ;
+		dest.writeString(this.user_id) ;
 		dest.writeString(this.artist) ;
 		dest.writeString(this.title) ;
 		dest.writeString(this.album) ;
