@@ -69,10 +69,10 @@ public class ControllJson {
 			JSONObject jsonObject = new JSONObject(responseMsg) ;
 			JSONArray jsonArray = null ;
 			try {
-				jsonObject.getJSONArray(util.TRACKS) ;
+				jsonArray = jsonObject.getJSONArray(util.TRACKS) ;
 			} catch (JSONException e) {
 				try {
-					jsonObject.getJSONArray(util.REVIEWS) ;
+					jsonArray = jsonObject.getJSONArray(util.REVIEWS) ;
 				} catch (JSONException e2) {}
 			}
 

@@ -2,7 +2,8 @@ package com.amr.aidl ;
 
 interface amrAIDL {
 	
-	void getKeywordToRecommendLists (String uri, String recvAction, String artist, String title, int count) ;
+	void getKeywordToRecommendLists (String uri, String recvAction,
+		String artist, String title, int count) ;
 	
 	void setUserRegistered (String recvAction, String user_id) ;
 	void setUserUnregistered (String recvAction, String user_id) ;
