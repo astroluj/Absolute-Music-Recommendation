@@ -33,7 +33,7 @@ public class util {
 	public final static String URL_SEARCH = "http://52.68.14.38/soundnerd/music/search" ;
 	public final static String URL_SIMILAR = "http://52.68.14.38/soundnerd/music/similar" ;
 	public final static String URL_RECOMMEND = "http://52.68.14.38/soundnerd/music/recommend" ;
-	public final static String URL_USER_REGISTER = "http://52.68.14.38/soundnerd/user/regitser" ;
+	public final static String URL_USER_REGISTER = "http://52.68.14.38/soundnerd/user/register" ;
 	public final static String URL_USER_REMOVE = "http://52.68.14.38/soundnerd/user/remove" ;
 	public final static String URL_USER_PLAY = "http://52.68.14.38/soundnerd/user/play" ;
 	public final static String URL_REVIEW_WRITE = "http://52.68.14.38/soundnerd/review/write" ;
