@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
 	private amrAIDL aidlAMRService ;
 	private ServiceConnection amrServiceConn ;
 		
-	private ArrayList<String> track_id = new ArrayList<String>() ;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -96,47 +94,56 @@ public class MainActivity extends AppCompatActivity {
 			case R.id.user_register:
 				if (item.getTitle().equals(getString(R.string.user_register))) {
 					item.setTitle(getString(R.string.user_remove)) ;
-					aidlAMRService.setUserRegistered(RECV_ACTION, "test") ;
+					aidlAMRService.setUserRegistered(RECV_ACTION, "test2") ;
+					aidlAMRService.setUserRegistered(RECV_ACTION, "test3") ;
 				}
 				else {
 					item.setTitle(getString(R.string.user_register)) ;
-					aidlAMRService.setUserUnregistered(RECV_ACTION, "test") ;
+					aidlAMRService.setUserUnregistered(RECV_ACTION, "test2") ;
+					aidlAMRService.setUserUnregistered(RECV_ACTION, "test3") ;
 				}
 				
 				break ;
 				
 			case R.id.music_recommend:
-				aidlAMRService.getKeywordToRecommendLists(null, RECV_ACTION, "김종국", "한 남자", 10) ;
+				aidlAMRService.getKeywordToRecommendLists(RECV_ACTION, null, "김종국", "한 남자", 10) ;
 				break ;
 				
 			case R.id.user_history:
 				break ;
 				
 			case R.id.music_user:
+				aidlAMRService.getMusicViewUserList(RECV_ACTION, "yNrbhmwkoTitukXs", 0, 10);
 				break ;
 				
 			case R.id.user_mate:
-				break ;
+				aidlAMRService.setMate(RECV_ACTION, "test3", "test2") ;
 				
+				break ;
+				 
 			case R.id.user_mate_list:
+				aidlAMRService.setUnmate(RECV_ACTION, "test3", "teset2") ;
+				
 				break ;
 				
 			case R.id.review_write:
-				aidlAMRService.setReview(RECV_ACTION, "tset", track_id.get(0), "ABCD") ;
+				aidlAMRService.reviewWrite(RECV_ACTION, "test3", "yNrbhmwkoTitukXs", "ABCD") ;
 				
 				break ;
-				
+
 			case R.id.music_review:
-				aidlAMRService.getReview(RECV_ACTION, track_id.get(0), 0, 10);
+				aidlAMRService.getMusicReview(RECV_ACTION, "yNrbhmwkoTitukXs", 0, 10);
 				
 				break ;
 				
 			case R.id.user_review:
-				aidlAMRService.getUserReview(RECV_ACTION, "test", 0, 10) ;
+				aidlAMRService.getUserReview(RECV_ACTION, "test3", 0, 10) ;
 
 				break ;
 				
 			case R.id.user_feed:
+				aidlAMRService.getUserMatesViewList(RECV_ACTION, "test3", 0, 10) ;
+				
 				break ;
 				
 			}
@@ -173,16 +180,14 @@ public class MainActivity extends AppCompatActivity {
 		
 		public void onReceive(Context context, Intent intent) {
 
+			
 			ArrayList<AMRData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
-
 			try {
 				for (AMRData list : lists) {
 	
 					try {
 						Log.d (TAG + "track_id : ", list.getTrackID()) ;
-						track_id.add (list.getTrackID()) ;
 					} catch (NullPointerException e) {}
-					
 					try {
 						Log.d (TAG + "user_id : ", list.getUserID()) ;
 					} catch (NullPointerException e) {}
@@ -196,13 +201,22 @@ public class MainActivity extends AppCompatActivity {
 						Log.d (TAG + "album : ", list.getAlbum()) ;
 					} catch (NullPointerException e) {}
 					try {
-						Log.d (TAG + "score : ", list.getScore()) ;
+						Log.d (TAG + "score : ", String.format("%.2f", list.getScore())) ;
 					} catch (NullPointerException e) {}
 					try {
 						Log.d (TAG + "timeStamp : ", list.getTimeStamp()) ;
 					} catch (NullPointerException e) {}
 					try {
 						Log.d (TAG + "content : ", list.getContent()) ;
+					} catch (NullPointerException e) {}
+					try {
+						Log.d (TAG + "isAdditionalItems : ", list.isAdditionalItems() +"") ;
+					} catch (NullPointerException e) {}
+					try {
+						Log.d (TAG + "Error Code : ", list.getErrorCode() +"") ;
+					} catch (NullPointerException e) {}
+					try {
+						Log.d (TAG + "Error Description : ", list.getErrorDescription()) ;
 					} catch (NullPointerException e) {}
 					
 					try {
