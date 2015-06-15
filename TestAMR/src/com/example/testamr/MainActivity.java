@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
 	private amrAIDL aidlAMRService ;
 	private ServiceConnection amrServiceConn ;
 		
+	private ArrayList<String> track_id = new ArrayList<String>() ;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,7 +71,15 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			switch (id) {
 			case R.id.user_register:
-				aidlAMRService.setUserRegistered(RECV_ACTION, "test") ;
+				if (item.getTitle().equals(getString(R.string.user_register))) {
+					item.setTitle(getString(R.string.user_remove)) ;
+					aidlAMRService.setUserRegistered(RECV_ACTION, "test") ;
+				}
+				else {
+					item.setTitle(getString(R.string.user_register)) ;
+					aidlAMRService.setUserUnregistered(RECV_ACTION, "test") ;
+				}
+				
 				break ;
 				
 			case R.id.music_recommend:
@@ -89,12 +99,18 @@ public class MainActivity extends AppCompatActivity {
 				break ;
 				
 			case R.id.review_write:
+				aidlAMRService.setReview(RECV_ACTION, "tset", track_id.get(0), "ABCD") ;
+				
 				break ;
 				
 			case R.id.music_review:
+				aidlAMRService.getReview(RECV_ACTION, track_id.get(0), 0, 10);
+				
 				break ;
 				
 			case R.id.user_review:
+				aidlAMRService.getUserReview(RECV_ACTION, "test", 0, 10) ;
+
 				break ;
 				
 			case R.id.user_feed:
@@ -133,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 			for (AMRData list : lists) {
 
 				Log.d (TAG + "track_id : ", list.getTrackID()) ;
+				track_id.add (list.getTrackID()) ;
 				Log.d (TAG + "user_id : ", list.getUserID()) ;
 				Log.d (TAG + "artist : ", list.getArtist()) ;
 				Log.d (TAG + "title : ", list.getTitle()) ;
