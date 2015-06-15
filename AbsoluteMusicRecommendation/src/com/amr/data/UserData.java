@@ -2,24 +2,39 @@ package com.amr.data;
 
 public class UserData {
 
-	private String user_id ;
+	private String userID, name ;
 	private boolean isRemove ;
 	
 	public UserData () {
-		this.user_id = "" ;
+		this.userID = "" ;
+		this.name ="" ;
 		this.isRemove = false ;
 	}
 	
-	public UserData (String user_id, boolean isRemove) {
-		this.user_id = user_id ;
+	public UserData (String userID, String name) {
+		this.userID = userID ;
+		this.name = name ; 
+		this.isRemove = false ;
+	}
+	
+	public UserData (String userID, String name, boolean isRemove) {
+		this.userID = userID ;
+		this.name = name ;
 		this.isRemove = isRemove ;
 	}
 	
 	public String getUserID () {
-		return this.user_id ;
+		return this.userID ;
 	}
-	public void setUserID (String user_id) {
-		this.user_id = user_id ;
+	public void setUserID (String userID) {
+		this.userID = userID ;
+	}
+	
+	public String getName () {
+		return this.name ;
+	}
+	public void setName (String name) {
+		this.name = name ;
 	}
 	
 	public boolean getIsRemove () {

@@ -8,9 +8,15 @@ import android.os.Parcelable;
 public class AMRData implements Parcelable {
 
 	// Custom Class
-	private ArrayList<TrackData> trackData ;
+	private ArrayList<AMRData> trackData ;
 	
-	private String track_id, user_id, artist, title, album, url, score, timeStamp, content  ;
+	private String track_id, user_id, artist, title, album, url, timeStamp, content  ;
+	private Double score ;
+	private Boolean isAdditionalItems ;
+	
+	// Errors
+	private String errorDescription ;
+	private Integer errorCode ;
 	
 	public static final Parcelable.Creator<AMRData> CREATOR = new Parcelable.Creator<AMRData> () {
 
@@ -28,21 +34,28 @@ public class AMRData implements Parcelable {
 	// Constructor
 	public AMRData () {
 		// TrackData
-		this.trackData = new ArrayList<TrackData> () ;
-		
+		this.trackData = new ArrayList<AMRData> () ;
+
 		// String
-		this.track_id = "" ;
-		this.user_id = "" ;
+		this.track_id = null ;
+		this.user_id = null ;
 		
-		this.artist = "" ;
-		this.title = "" ;
-		this.album = "" ;
-		this.url = "" ;
-		this.timeStamp = "" ;
-		this.content = "" ;
+		this.artist = null ;
+		this.title = null ;
+		this.album = null ;
+		this.url = null ;
+		this.timeStamp = null ;
+		this.content = null ;
+		
+		// boolean
+		this.isAdditionalItems = null ;
 		
 		// Float .2f
-		this.score = "" ;
+		this.score = null ;
+				
+		// Errors
+		this.errorCode = null ;
+		this.errorDescription = null ;
 	}
 	
 	public AMRData (AMRData recommendData) {
@@ -61,14 +74,22 @@ public class AMRData implements Parcelable {
 		this.timeStamp = recommendData.getTimeStamp() ;
 		this.content = recommendData.getContent() ;
 		
+		// boolean
+		this.isAdditionalItems = recommendData.isAdditionalItems() ;
+		
 		// Float .2f
 		this.score = recommendData.getScore() ;
+				
+		// Erros
+		this.errorCode = recommendData.getErrorCode() ;
+		this.errorDescription = recommendData.getErrorDescription() ;
 	}
 	
-	public AMRData (ArrayList<TrackData> trackData, String track_id, String user_id,
+	public AMRData (ArrayList<AMRData> trackData, String track_id, String user_id,
 			String artist, String title, String album,
-			String url, String score,
-			String timeStamp, String content) {
+			String url, Double score,
+			String timeStamp, String content, Boolean isAdditionalItems,
+			Integer errorCode, String errorDescription) {
 		
 		// TrackData
 		this.trackData = trackData ;
@@ -85,14 +106,24 @@ public class AMRData implements Parcelable {
 		this.timeStamp = timeStamp ;
 		this.content = content ;
 		
+		// boolean
+		this.isAdditionalItems = isAdditionalItems ;
+		
 		// Float .2f
 		this.score = score ;		
+		
+		// Erros
+		this.errorCode = errorCode ;
+		this.errorDescription =  errorDescription ;
 	}
 	
 	public AMRData (Parcel source) {
 		// TrackData
-		this.trackData = source.readArrayList(TrackData.class.getClassLoader()) ;
-				
+		try {
+			source.readTypedList(trackData, AMRData.CREATOR);
+		} catch (NullPointerException e) {
+			this.trackData = source.createTypedArrayList(AMRData.CREATOR) ;
+		}
 		// String
 		this.track_id = source.readString() ;
 		this.user_id = source.readString() ;
@@ -105,16 +136,35 @@ public class AMRData implements Parcelable {
 		this.timeStamp = source.readString() ;
 		this.content = source.readString() ;
 		
+		// Boolean
+		try {
+			this.isAdditionalItems = (Boolean) source.readValue(Boolean.class.getClassLoader()) ;
+		} catch (Exception e) {
+			this.isAdditionalItems = null ;
+		}
+		
 		// Float .2f
-		this.score = source.readString() ;
+		try {
+			this.score = (Double) source.readValue(Double.class.getClassLoader()) ;
+		} catch (Exception e) {
+			this.score = null ;
+		}
+		
+		// Errors
+		try {
+			this.errorCode = (Integer) source.readValue(Integer.class.getClassLoader()) ;
+		} catch (Exception e) {
+			this.errorCode = null ;
+		}
+		this.errorDescription = source.readString() ;
 	}
 	
 	// Get TrackData
-	public ArrayList<TrackData> getTrack() {
+	public ArrayList<AMRData> getTrack() {
 		return this.trackData ;
 	}
 	// Set TrackData
-	public void setTrack (ArrayList<TrackData> trackData) {
+	public void setTrack (ArrayList<AMRData> trackData) {
 		this.trackData = trackData ;
 	}
 	
@@ -191,18 +241,41 @@ public class AMRData implements Parcelable {
 	}
 	
 	// Get score
-	public String getScore () {
+	public Double getScore () {
 		return this.score ;
 	}
 	// Set score
-	public void setScore (String score) {
-		try {
-		this.score = String.format("%.2f", Float.parseFloat(score)) ;
-		} catch (NullPointerException e) {
-			this.score =  score ;
-		} 
+	public void setScore (Double score) {
+		this.score =  score ;
 	}
 
+	// Get AdditionalItems
+	public Boolean isAdditionalItems () {
+		return this.isAdditionalItems ;
+	}
+	// Set AdditionalItems
+	public void setAdditionalItems (Boolean isAdditionalItems) {
+		this.isAdditionalItems = isAdditionalItems ;
+	}
+	
+	// Get Error Code
+	public Integer getErrorCode () {
+		return this.errorCode ;
+	}
+	// Set Error code
+	public void setErrorCode (Integer errorCode) {
+		this.errorCode = errorCode ;
+	}
+	
+	// Get Error Description
+	public String getErrorDescription () {
+		return this.errorDescription ;
+	}
+	// Set Error Description
+	public void setErrorDescription (String errorDescription) {
+		this.errorDescription = errorDescription ;
+	}
+	
 	@Override
 	// Override Type alert
 	public int describeContents() {
@@ -221,6 +294,9 @@ public class AMRData implements Parcelable {
 		dest.writeString(this.url) ;
 		dest.writeString(this.timeStamp);
 		dest.writeString(this.content);
-		dest.writeString(this.score) ;
+		dest.writeValue(this.score) ;
+		dest.writeValue(this.isAdditionalItems) ;
+		dest.writeValue(this.errorCode);
+		dest.writeString(this.errorDescription);
 	}
 }

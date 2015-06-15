@@ -33,11 +33,26 @@ public class util {
 	public final static String URL_SEARCH = "http://52.68.14.38/soundnerd/music/search" ;
 	public final static String URL_SIMILAR = "http://52.68.14.38/soundnerd/music/similar" ;
 	public final static String URL_RECOMMEND = "http://52.68.14.38/soundnerd/music/recommend" ;
+	
 	public final static String URL_USER_REGISTER = "http://52.68.14.38/soundnerd/user/register" ;
 	public final static String URL_USER_REMOVE = "http://52.68.14.38/soundnerd/user/remove" ;
+	
 	public final static String URL_USER_PLAY = "http://52.68.14.38/soundnerd/user/play" ;
+	
+	public final static String URL_USER_SHARED_HISTORY = "http://52.68.14.38/soundnerd/user/shared_history" ;
+	public final static String URL_USER_NON_SHARED_HISTORY = "http://52.68.14.38/soundnerd/nonshared_hisotry" ;
+	
+	public final static String URL_MUSIC_USER = "http://52.68.14.38/soundnerd/music/user" ;
+	
+	public final static String URL_USER_MATE = "http://52.68.14.38/soundnerd/user/mate" ;
+	public final static String URL_USER_UNMATE = "http://52.68.14.38/soundnerd/user/unmate" ;
+	public final static String URL_USER_MATE_LIST = "http://52.68.14.38/soundnerd/user/matelist" ;
+	
 	public final static String URL_REVIEW_WRITE = "http://52.68.14.38/soundnerd/review/write" ;
 	public final static String URL_MUSIC_REVIEW = "http://52.68.14.38/soundnerd/music/review" ;
+	public final static String URL_USER_REVIEW = "http://52.68.14.38/soundnerd/user/review" ;
+	
+	public final static String URL_USER_FEED = "http://52.68.14.38/soundnerd/user/feed" ;
 	
 	public final static String POST = "POST" ;
 	public final static String UTF_8 = "UTF-8" ;
@@ -47,24 +62,37 @@ public class util {
 	
 	public final static String TRACKS = "tracks" ;
 	public final static String REVIEWS = "reviews" ;
+	public final static String LISTENING_HISTORY = "listening_history" ;
+	public final static String TRACK = "track" ;
+	public final static String USERS = "users" ;
+	public final static String MATES = "mates" ;
+	public final static String ERROR = "error" ;
+	
+	public final static String TRACK_ID = "track_id" ;
+	public final static String USER_ID = "user_id" ;
+	public final static String REQ_USER_ID = "req_user_id" ;
+	public final static String LOOK_UP_USER_ID = "lookup_user_id" ;
+	public final static String MATING_USER_ID = "mating_user_id" ;
+	public final static String MATED_USER_ID = "mated_user_id" ;
+	public final static String UNMATING_USER_ID = "unmating_user_id" ;
+	public final static String UNMATED_USER_ID = "unmated_user_id" ;
 	
 	public final static String FEATURE = "feature" ;
 	public final static String ARTIST = "artist" ;
 	public final static String TITLE = "title" ;
 	public final static String START = "start" ;
 	public final static String COUNT = "count" ;
-	public final static String TRACK_ID = "track_id" ;
-	public final static String USER_ID = "user_id" ;
-	public final static String TRACK = "track" ;
-	
 	public final static String ALBUM = "album" ;
 	public final static String URL = "url" ;
 	public final static String TIME_STAMP = "timestamp" ;
 	public final static String CONTENT = "content" ;
 	public final static String SCORE = "score" ;
+	public final static String ADDITIONAL_ITEMS = "additional_items" ;
+	
+	public final static String ERROR_CODE = "code" ;
+	public final static String ERROR_DESCRIPTION = "description" ;
 	
 	// JSON Value
-	public final static int TRACK_ID_COUNT = 1 ;
 	public final static int START_INDEX = 0 ;
 	
 	// Log Tag

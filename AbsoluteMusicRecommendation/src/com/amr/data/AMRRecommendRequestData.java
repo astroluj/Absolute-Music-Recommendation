@@ -3,7 +3,7 @@ package com.amr.data;
 public class AMRRecommendRequestData {
 
 	// Cusmtom Class
-	private UserData userData ;
+	private UserData userData, subUserData ;
 	
 	private String feature, track_id, artist, title, album, content ;
 	private Integer startIndex, count ;
@@ -20,6 +20,7 @@ public class AMRRecommendRequestData {
 		this.content = "" ;
 		
 		this.userData = new UserData () ;
+		this.subUserData = new UserData () ;
 		
 		// Integer
 		this.startIndex = 0 ;
@@ -27,7 +28,8 @@ public class AMRRecommendRequestData {
 	}
 	
 	public AMRRecommendRequestData (String feature, String track_id,
-			String artist, String title, String album, String content, UserData userData,
+			String artist, String title, String album, String content,
+			UserData userData, UserData subUserData,
 			Integer startIndex, Integer count) {
 		// String
 		this.feature = feature ;
@@ -39,6 +41,7 @@ public class AMRRecommendRequestData {
 		
 		// UserData
 		this.userData = userData ;
+		this.subUserData = subUserData ;
 		
 		// Integer
 		this.startIndex = startIndex ;
@@ -57,6 +60,7 @@ public class AMRRecommendRequestData {
 		
 		// UserData
 		this.userData = amrData.getUserData() ;
+		this.subUserData = amrData.getSubUserData() ;
 		
 		// Integer
 		this.startIndex = amrData.getStartIndex() ;
@@ -117,6 +121,12 @@ public class AMRRecommendRequestData {
 	}
 	public void setUserData (UserData userData) {
 		this.userData = userData ;
+	}
+	public UserData getSubUserData () {
+		return this.subUserData ;
+	}
+	public void setSubUserData (UserData subUserData) {
+		this.subUserData =  subUserData ;
 	}
 	
 	// startIndex GetSet

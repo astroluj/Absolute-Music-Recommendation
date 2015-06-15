@@ -239,8 +239,8 @@ public class PlayActivity extends Activity {
 	private void requestRecommendList (Uri musicUri) {
 		// Call AIDL
 		try {
-			aidlAMRService.getKeywordToRecommendLists(musicUri.toString(), 
-					util.MUSIC_RECOMMEND_RESPONSE_FILTER,
+			aidlAMRService.getKeywordToRecommendLists(util.MUSIC_RECOMMEND_RESPONSE_FILTER,
+					musicUri.toString(),
 					musicAdapter.getMusicArtist(currentPosition),
 					musicAdapter.getMusicTitle(currentPosition), 5) ;
 			

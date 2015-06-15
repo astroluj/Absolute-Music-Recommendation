@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.amr.data.AMRRecommendRequestData;
 import com.amr.data.AMRData;
-import com.amr.data.UserData;
 import com.amr.network.json.PostJson;
 import com.amr.util.util;
 
@@ -16,39 +15,27 @@ import android.util.Log;
 public class NetworkThread extends Thread {
 
 	// Custom Class
-	private UserData userData ;
 	private PostJson postJson ;
 	private ArrayList<AMRData> responsePaserDataArray ;
+	private AMRRecommendRequestData amrReqData ;
 	
 	private Context context ;
 	private Handler handler ;
 	
-	private String recvAction, feature, track_id, artist, title, album, content ;
-	private Integer startIndex, count ;
+	private String recvAction ;
 	private int CASE ;
 	
 	public NetworkThread (Context context, Handler handler,
-			String recvAction, AMRRecommendRequestData amrData, int CASE) {
+			String recvAction, AMRRecommendRequestData amrReqData, int CASE) {
 		
 		this.postJson = new PostJson () ;
 		
 		this.context = context ;
 		this.handler = handler ;
 	
-		// String
+		this.amrReqData = amrReqData ;
+		
 		this.recvAction = recvAction ;
-		this.feature = amrData.getFeature() ;
-		this.track_id = amrData.getTrackID() ;
-		this.artist = amrData.getArtist() ;
-		this.title = amrData.getTitle() ;
-		this.album = amrData.getAlbum() ;
-		this.content = amrData.getContent() ;
-		
-		this.userData = amrData.getUserData() ;
-		
-		// Integer
-		this.startIndex = amrData.getStartIndex() ;
-		this.count = amrData.getCount() ;
 		
 		this.CASE = CASE ;
 	}
@@ -63,9 +50,7 @@ public class NetworkThread extends Thread {
 				// /user/register or remove
 				responsePaserDataArray = postJson.getResponseArrays(
 						postJson.sendData(
-								postJson.postRequest(new AMRRecommendRequestData (feature, track_id,
-										artist, title, album, content, userData,
-										startIndex, count)), (userData.getIsRemove() == false) ?
+								postJson.postRequest(amrReqData), (amrReqData.getUserData().getIsRemove() == true) ?
 												util.URL_USER_REMOVE
 												: util.URL_USER_REGISTER)) ;
 				
@@ -74,9 +59,7 @@ public class NetworkThread extends Thread {
 				// /music/similar Request
 				responsePaserDataArray = postJson.getResponseArrays(
 						postJson.sendData(
-								postJson.postRequest(new AMRRecommendRequestData (feature, track_id,
-										artist, title, album, content, userData,
-										startIndex, count)), util.URL_SIMILAR)) ;
+								postJson.postRequest(amrReqData), util.URL_SIMILAR)) ;
 				
 				break ;
 			case util.MUSIC_SEARCH :
@@ -85,23 +68,20 @@ public class NetworkThread extends Thread {
 					// /music/search
 					AMRData responsePaserData = postJson.getResponseArrays(
 							postJson.sendData(
-									postJson.postRequest(new AMRRecommendRequestData(feature, track_id,
-											artist, title, album, content, userData,
-											startIndex, util.TRACK_ID_COUNT)),
+									postJson.postRequest(amrReqData),
 											util.URL_SEARCH)).get(0) ;
 					
+					amrReqData.setTrackID(responsePaserData.getTrackID()) ;
 					// Recommend Lists
 					// /music/recommend
 					responsePaserDataArray = postJson.getResponseArrays(
 							postJson.sendData(
-									postJson.postRequest(new AMRRecommendRequestData (feature, responsePaserData.getTrackID(),
-											artist, title, album, content, userData,
-											startIndex, count)), util.URL_RECOMMEND)) ;
+									postJson.postRequest(amrReqData), util.URL_RECOMMEND)) ;
 					
 				} catch (IndexOutOfBoundsException e) {
 					// dis-exist in Bonacell DB
 					// feature 가능 하면 feature 추출
-					if (feature != null) {
+					if (amrReqData.getFeature () != null) {
 						
 						handler.sendEmptyMessage(util.ANALYZE_FEATURE) ;
 					}
@@ -119,46 +99,79 @@ public class NetworkThread extends Thread {
 				// /user/play
 				responsePaserDataArray = postJson.getResponseArrays(
 						postJson.sendData(
-								postJson.postRequest(new AMRRecommendRequestData (feature, track_id,
-										artist, title, album, content, userData,
-										startIndex, count)), util.URL_USER_PLAY)) ;
+								postJson.postRequest(amrReqData), util.URL_USER_PLAY)) ;
 				
 				break ;
 			case util.USER_SHARED_HISTORY :
+				// /user/shared_history
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrReqData), util.URL_USER_SHARED_HISTORY)) ;
+				
 				break ;
 			case util.USER_NONSHARED_HISTORY :
+				// /user/nonshared_history
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrReqData), util.URL_USER_NON_SHARED_HISTORY)) ;
+				
 				break ;
 			case util.MUSIC_USERS :
+				// /music/user
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrReqData), util.URL_MUSIC_USER)) ;
+				
 				break ;
 			case util.USER_MATE :
+				// /user/mate
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrReqData), util.URL_USER_MATE)) ;
+				
 				break ;
 			case util.USER_UNMATE :
+				// /user/unmate
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrReqData), util.URL_USER_UNMATE)) ;
+				
 				break ;
 			case util.USER_MATE_LIST :
+				// /user/matelist
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrReqData), util.URL_USER_MATE_LIST)) ;
+				
 				break ;
 			case util.REVIEW_WRITE :
 				// /review/write
 				responsePaserDataArray = postJson.getResponseArrays(
 						postJson.sendData(
-								postJson.postRequest(new AMRRecommendRequestData (feature, track_id,
-										artist, title, album, content, userData,
-										startIndex, count)), util.URL_REVIEW_WRITE)) ;
+								postJson.postRequest(amrReqData), util.URL_REVIEW_WRITE)) ;
 				
 				break ;
 			case util.MUSIC_REVIEW :
 				// /music/review
 				responsePaserDataArray = postJson.getResponseArrays(
 						postJson.sendData(
-								postJson.postRequest(new AMRRecommendRequestData (feature, track_id,
-										artist, title, album, content, userData,
-										startIndex, count)), util.URL_MUSIC_REVIEW)) ;
+								postJson.postRequest(amrReqData), util.URL_MUSIC_REVIEW)) ;
 				
 				break ;
 			case util.USER_REVIEW :
+				// /user/review
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrReqData), util.URL_USER_REVIEW)) ;
+				
 				break ;
 			case util.USER_FEED :
-				break ;
+				// /user/feed
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrReqData), util.URL_USER_FEED)) ;
 				
+				break ;
 			}
 				
 			// Send BroadCast Recommend Lists
