@@ -1,0 +1,66 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.testamr.MainActivity" >
+
+    <item
+        android:id="@+id/user_register"
+        android:orderInCategory="100"
+        android:title="@string/user_register"
+        app:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/music_recommend"
+        android:orderInCategory="100"
+        android:title="@string/music_recommend"
+        app:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/user_history"
+        android:orderInCategory="100"
+        android:title="@string/user_history"
+        app:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/music_user"
+        android:orderInCategory="100"
+        android:title="@string/music_user"
+        app:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/user_mate"
+        android:orderInCategory="100"
+        android:title="@string/user_mate"
+        app:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/user_mate_list"
+        android:orderInCategory="100"
+        android:title="@string/user_mate_list"
+        app:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/review_write"
+        android:orderInCategory="100"
+        android:title="@string/review_write"
+        app:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/music_review"
+        android:orderInCategory="100"
+        android:title="@string/music_review"
+        app:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/user_review"
+        android:orderInCategory="100"
+        android:title="@string/user_review"
+        app:showAsAction="ifRoom"/>
+    
+    <item
+        android:id="@+id/user_feed"
+        android:orderInCategory="100"
+        android:title="@string/user_feed"
+        app:showAsAction="ifRoom"/>
+
+</menu>
