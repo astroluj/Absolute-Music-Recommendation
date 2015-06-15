@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TestAMR</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+	<string name="user_register">Register</string>
+	<string name="user_remove">Remove</string>
+	<string name="music_recommend">Recommend</string>
+	<string name="user_history">History</string>
+	<string name="music_user">Users</string>
+	<string name="user_mate">Mate</string>
+	<string name="user_unmate">Unmate</string>
+	<string name="user_mate_list">Mate List</string>
+	<string name="review_write">Write</string>
+	<string name="music_review">Music Review</string>
+	<string name="user_review">User Review</string>
+	<string name="user_feed">User Feed</string>
+</resources>
