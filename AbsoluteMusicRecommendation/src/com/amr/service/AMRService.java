@@ -179,6 +179,7 @@ public class AMRService extends Service {
 			@Override
 			public void setUnmate(String recvAction, String unmatingUser_id,
 					String unmatedUserID) throws RemoteException {
+				
 				Log.d (util.TAG, "called setUnmate function") ;
 				try {
 					if (networkThread != null)
@@ -188,6 +189,24 @@ public class AMRService extends Service {
 							new AMRRecommendRequestData (null, null, null, null, null, null,
 							new UserData (unmatingUser_id, util.UNMATING_USER_ID), new UserData (unmatedUserID, util.UNMATED_USER_ID),
 							null, null), util.USER_PLAY) ;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
+			@Override
+			public void getMateList(String recvAction, String userID,
+					int start, int count) throws RemoteException {
+
+				Log.d (util.TAG, "called getMateList function") ;
+				try {
+					if (networkThread != null)
+						releaseNetworkThread();
+					
+					startNetworkThread(recvAction,
+							new AMRRecommendRequestData (null, null, null, null, null, null,
+							new UserData (userID, util.USER_ID), null,
+							start, count), util.USER_PLAY) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
