@@ -117,12 +117,19 @@ public class MainActivity extends AppCompatActivity {
 				break ;
 				
 			case R.id.user_mate:
-				aidlAMRService.setMate(RECV_ACTION, "test3", "test2") ;
+				if (item.getTitle().equals(getString(R.string.user_mate))) {
+					item.setTitle(getString(R.string.user_unmate)) ;
+					aidlAMRService.setMate(RECV_ACTION, "test3", "test2") ;
+				}
+				else {
+					item.setTitle(getString(R.string.user_mate)) ;
+					aidlAMRService.setUnmate(RECV_ACTION, "test3", "teset2") ;
+				}
 				
 				break ;
 				 
 			case R.id.user_mate_list:
-				aidlAMRService.setUnmate(RECV_ACTION, "test3", "teset2") ;
+				aidlAMRService.getMateList(RECV_ACTION, "test3", 0, 10) ;
 				
 				break ;
 				
