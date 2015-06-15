@@ -83,7 +83,7 @@ public class AMRService extends Service {
 			}
 
 			@Override
-			public void setUserPlay(String recvAction, String user_id,
+			public void setUserPlay(String recvAction, String uri, String user_id,
 					String artist, String title, String album)
 					throws RemoteException {
 
@@ -120,7 +120,7 @@ public class AMRService extends Service {
 			}
 
 			@Override
-			public void getReview(String recvAction, int start, int count)
+			public void getReview(String recvAction, String track_id, int start, int count)
 					throws RemoteException {
 
 				Log.d (util.TAG, "called getReview function") ;
@@ -129,7 +129,7 @@ public class AMRService extends Service {
 						releaseNetworkThread();
 					
 					startNetworkThread(recvAction,
-							new AMRRecommendRequestData (null, null, null, null, null, null,
+							new AMRRecommendRequestData (null, track_id, null, null, null, null,
 							null,
 							start, count), util.MUSIC_REVIEW) ;
 				} catch (Exception e) {
@@ -138,7 +138,7 @@ public class AMRService extends Service {
 			}
 
 			@Override
-			public void getUserReview(String recvAction, int start, int count)
+			public void getUserReview(String recvAction, String user_id, int start, int count)
 					throws RemoteException {
 
 				Log.d (util.TAG, "called getUserReview function") ;
@@ -148,7 +148,7 @@ public class AMRService extends Service {
 					
 					startNetworkThread(recvAction,
 							new AMRRecommendRequestData (null, null, null, null, null, null,
-							null,
+							new UserData(user_id, true),
 							start, count), util.USER_REVIEW) ;
 				} catch (Exception e) {
 					e.printStackTrace();
