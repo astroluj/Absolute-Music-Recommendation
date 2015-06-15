@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -23,6 +24,9 @@ public class MainActivity extends AppCompatActivity {
 	public static final String TAG = "TestAMR View :" ;
 	public static final String RECV_ACTION = "com.example.testamr" ;
 	
+	// Custom Class
+	private RecommendationReciever recommedRecv ;
+		
 	// AMRAIDL
 	private amrAIDL aidlAMRService ;
 	private ServiceConnection amrServiceConn ;
@@ -37,6 +41,12 @@ public class MainActivity extends AppCompatActivity {
 		// TODO : 필수
 		// AIDL SET
 		serviceConnection () ;
+		
+		// Receiver Registered and AMR called
+		if (recommedRecv == null) {
+			recommedRecv = new RecommendationReciever() ;
+			registerReceiver(recommedRecv, new IntentFilter (RECV_ACTION)) ;
+		}
 	}
 
 	
@@ -54,6 +64,19 @@ public class MainActivity extends AppCompatActivity {
 			}
 		};
 	}
+	
+	private void unregisterReceiver () {
+		// UnRegister Receiver
+		try {
+			if (recommedRecv != null) {
+				unregisterReceiver(recommedRecv);
+				recommedRecv = null ;
+			} 
+		} catch (IllegalArgumentException e) {
+			recommedRecv = null ;
+		}
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -139,6 +162,12 @@ public class MainActivity extends AppCompatActivity {
 		unbindService(amrServiceConn);
 	}
 	
+	protected void onDestroy () {
+		super.onDestroy();
+		
+		unregisterReceiver () ;
+	}
+	
 	//Catch Recommendation list on Intent Action 
 	public class RecommendationReciever extends BroadcastReceiver {
 		
@@ -146,23 +175,51 @@ public class MainActivity extends AppCompatActivity {
 
 			ArrayList<AMRData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
 
-			for (AMRData list : lists) {
-
-				Log.d (TAG + "track_id : ", list.getTrackID()) ;
-				track_id.add (list.getTrackID()) ;
-				Log.d (TAG + "user_id : ", list.getUserID()) ;
-				Log.d (TAG + "artist : ", list.getArtist()) ;
-				Log.d (TAG + "title : ", list.getTitle()) ;
-				Log.d (TAG + "album : ", list.getAlbum()) ;
-				Log.d (TAG + "score : ", list.getScore()) ;
-				Log.d (TAG + "timeStamp : ", list.getTimeStamp()) ;
-				Log.d (TAG + "content : ", list.getContent()) ;
-				for (int i = 0 ; i < list.getTrack().size() ; i++) {
-					Log.d (TAG + "track track_id : ", list.getTrack().get(i).getTrackID()) ;
-					Log.d (TAG + "track artist : ", list.getTrack().get(i).getArtist()) ;
-					Log.d (TAG + "track title : ", list.getTrack().get(i).getTitle()) ;
+			try {
+				for (AMRData list : lists) {
+	
+					try {
+						Log.d (TAG + "track_id : ", list.getTrackID()) ;
+						track_id.add (list.getTrackID()) ;
+					} catch (NullPointerException e) {}
+					
+					try {
+						Log.d (TAG + "user_id : ", list.getUserID()) ;
+					} catch (NullPointerException e) {}
+					try {
+						Log.d (TAG + "artist : ", list.getArtist()) ;
+					} catch (NullPointerException e) {}
+					try {
+						Log.d (TAG + "title : ", list.getTitle()) ;
+					} catch (NullPointerException e) {}
+					try {
+						Log.d (TAG + "album : ", list.getAlbum()) ;
+					} catch (NullPointerException e) {}
+					try {
+						Log.d (TAG + "score : ", list.getScore()) ;
+					} catch (NullPointerException e) {}
+					try {
+						Log.d (TAG + "timeStamp : ", list.getTimeStamp()) ;
+					} catch (NullPointerException e) {}
+					try {
+						Log.d (TAG + "content : ", list.getContent()) ;
+					} catch (NullPointerException e) {}
+					
+					try {
+						for (int i = 0 ; i < list.getTrack().size() ; i++) {
+							try {
+								Log.d (TAG + "track track_id : ", list.getTrack().get(i).getTrackID()) ;
+							} catch (NullPointerException e) {}
+							try {
+								Log.d (TAG + "track artist : ", list.getTrack().get(i).getArtist()) ;
+							} catch (NullPointerException e) {}
+							try {
+								Log.d (TAG + "track title : ", list.getTrack().get(i).getTitle()) ;
+							} catch (NullPointerException e) {}
+						}
+					} catch (NullPointerException e) {}
 				}
-			}
+			} catch (Exception e) {}
 		}
 	}
 }
