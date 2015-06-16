@@ -114,7 +114,7 @@ public class AMRService extends Service {
 					startNetworkThread(recvAction,
 							new AMRRecommendRequestData (null, trackID, null, null, null, null,
 							null, null,
-							start, count), util.USER_PLAY) ;
+							start, count), util.MUSIC_USERS) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -133,7 +133,7 @@ public class AMRService extends Service {
 					startNetworkThread(recvAction,
 							new AMRRecommendRequestData (null, null, null, null, null, null,
 							new UserData (reqUserID, util.REQ_USER_ID), new UserData (lookUpUserID, util.LOOK_UP_USER_ID),
-							start, count), util.USER_PLAY) ;
+							start, count), util.USER_SHARED_HISTORY) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -152,7 +152,7 @@ public class AMRService extends Service {
 					startNetworkThread(recvAction,
 							new AMRRecommendRequestData (null, null, null, null, null, null,
 							new UserData (reqUserID, util.REQ_USER_ID), new UserData (lookUpUserID, util.LOOK_UP_USER_ID),
-							null, null), util.USER_PLAY) ;
+							null, null), util.USER_NONSHARED_HISTORY) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -170,15 +170,16 @@ public class AMRService extends Service {
 					startNetworkThread(recvAction,
 							new AMRRecommendRequestData (null, null, null, null, null, null,
 							new UserData (matingUserID, util.MATING_USER_ID), new UserData (matedUserID, util.MATED_USER_ID),
-							null, null), util.USER_PLAY) ;
+							null, null), util.USER_MATE) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 
 			@Override
-			public void setUnmate(String recvAction, String unmatingUser_id,
+			public void setUnmate(String recvAction, String unmatingUserID,
 					String unmatedUserID) throws RemoteException {
+				
 				Log.d (util.TAG, "called setUnmate function") ;
 				try {
 					if (networkThread != null)
@@ -186,13 +187,31 @@ public class AMRService extends Service {
 					
 					startNetworkThread(recvAction,
 							new AMRRecommendRequestData (null, null, null, null, null, null,
-							new UserData (unmatingUser_id, util.UNMATING_USER_ID), new UserData (unmatedUserID, util.UNMATED_USER_ID),
-							null, null), util.USER_PLAY) ;
+							new UserData (unmatingUserID, util.UNMATING_USER_ID), new UserData (unmatedUserID, util.UNMATED_USER_ID),
+							null, null), util.USER_UNMATE) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 
+			@Override
+			public void getMateList(String recvAction, String userID,
+					int start, int count) throws RemoteException {
+				
+				Log.d (util.TAG, "called getMateList function") ;
+				try {
+					if (networkThread != null)
+						releaseNetworkThread();
+					
+					startNetworkThread(recvAction,
+							new AMRRecommendRequestData (null, null, null, null, null, null,
+							new UserData (userID, util.USER_ID), null,
+							start, count), util.USER_MATE_LIST) ;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			
 			@Override
 			public void reviewWrite (String recvAction, String userID,
 					String trackID, String content) throws RemoteException {
@@ -259,7 +278,7 @@ public class AMRService extends Service {
 					startNetworkThread(recvAction,
 							new AMRRecommendRequestData (null, null, null, null, null, null,
 							new UserData (userID, util.USER_ID), null,
-							start, count), util.USER_PLAY) ;
+							start, count), util.USER_FEED) ;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

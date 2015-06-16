@@ -17,7 +17,8 @@ interface amrAIDL {
 		String lookUpUserID, int start, int count) ;
 		
 	void setMate (String recvAction, String matingUserID, String matedUserID) ;
-	void setUnmate (String recvAction, String unmatingUser_id, String unmatedUserID) ;
+	void setUnmate (String recvAction, String unmatingUserID, String unmatedUserID) ;
+	void getMateList (String recvAction, String userID, int start, int count) ;
 	
 	void reviewWrite (String recvAction, String userID, String trackID, String content) ;
 	void getMusicReview (String recvAction, String trackID, int start, int count) ;
