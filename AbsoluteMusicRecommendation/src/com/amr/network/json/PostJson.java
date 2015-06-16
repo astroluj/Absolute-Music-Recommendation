@@ -1,120 +1,162 @@
 package com.amr.network.json;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.ArrayList;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
-
+import com.amr.data.AMRRecommendRequestData;
+import com.amr.data.AMRData;
 import com.amr.util.util;
 
+import android.content.ContentValues;
 import android.util.Log;
 
-public class PostJson {
+public class PostJson extends ControllJson {
 
-	private ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
- 
-        @Override
-        public String handleResponse(HttpResponse response) throws IOException {
- 
-            int status = response.getStatusLine().getStatusCode(); // HTTP 상태코드         
-                         
-            if (status == HttpStatus.SC_OK) { // 200 인경우 성공
-                HttpEntity entity = response.getEntity();
-                
-                return entity != null ?EntityUtils.toString(entity) : null ;
-            } else {
-                ClientProtocolException e = new ClientProtocolException("Unexpected response status: " + status);
-                throw e; // 상태코드 200이 아닌경우 예외발생
-            }
- 
-        }
-         
-    };
-     
+    public PostJson () {
+    	super () ;
+    }
+    
     // Get Post type list
-	public String sendData(ArrayList <BasicNameValuePair> jsonMsg, String url) {
+	public String sendData(ContentValues jsonMsg, String url) {
 		
 		// 연결 HttpClient 객체 생성
-		HttpClient client = new DefaultHttpClient();
+		HttpURLConnection conn = null ;
+		OutputStream outputStream = null ;
+		BufferedWriter bufferedWriter = null ;
+		BufferedReader bufferedReader = null ;
 		try {
-			// 객체 연결 설정 부분, 연결 시간, 데이터 대기 시간
-			HttpParams params = client.getParams();
-			HttpConnectionParams.setConnectionTimeout(params, util.CONNECT_DELAY_TIME);
-			HttpConnectionParams.setSoTimeout(params, util.CONNECT_DELAY_TIME);
-		 
-			// Post객체 생성
-			HttpPost httpPost = new HttpPost(url);
-			// Entity 설정
-			httpPost.setEntity(new UrlEncodedFormEntity (jsonMsg, HTTP.UTF_8));
-			// Header Setting
-			// 컨트롤 캐쉬 설정
-			httpPost.setHeader("Cache-Control", "no-cache");
-			// 타입설정(application/json) 형식으로 전송 (Request Body 전달시 application/json로 서버에 전달.)
-			httpPost.setHeader(HTTP.CONTENT_TYPE, "application/json");
-			// Server Response JSON Type
-			httpPost.setHeader("Accept", "application/json");
+			// Try URL Connection
+			for (int i = 0 ; i < util.RECONNECTION_COUNT ; i++) {
+				try {
+					conn = setURLConnection(new URL(url)) ;
+					outputStream = conn.getOutputStream();
+					
+					break ;
+				} catch (SocketTimeoutException e) {
+					Log.e (util.TAG + "Socket Connect Count", "Count " + i) ;
+				}
+			}
+			bufferedWriter = new BufferedWriter(new OutputStreamWriter (outputStream, util.UTF_8)) ;
+			bufferedWriter.write(jsonMsg.toString()) ;
+
+			// Request Body Write
+			bufferedWriter.flush();
+			String responseMsg = "" ;
+
+			// HTTP 상태코드         
+			// 200 인경우 성공
+			if(conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+			 
+				Log.d (util.TAG + "HTTP Status code : ", "" + conn.getResponseCode()) ;
+				String data = "" ;
+				bufferedReader = new BufferedReader(new InputStreamReader (conn.getInputStream())) ;
+				
+				while ((data = bufferedReader.readLine()) != null)
+					responseMsg += data ;
+			}
+			else {
+				Log.d (util.TAG + "HTTP Status code : ", "" + conn.getResponseCode()) ;
+			}
 			
-			Log.d (util.TAG, jsonMsg.toString()) ;
-			return client.execute(httpPost, responseHandler);
+			return responseMsg ;
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+			return null ;
 		} catch (Exception e) {
-			if (client != null) client.getConnectionManager().shutdown() ;
-			e.printStackTrace(); 
+			e.printStackTrace();
+			
+			return null;
+			
+		} finally {
+			// disConnection 
+			if (conn != null) conn.disconnect() ;
+			// Stream Close
+			if (bufferedWriter != null) {
+				try {
+					bufferedWriter.close() ;
+				} catch (IOException e) {
+					bufferedWriter = null ;
+				} 
+			}
+			if (outputStream != null) {
+				try {
+					outputStream.close() ;
+				} catch (IOException e) {
+					outputStream = null ;
+				}
+			}
+			if (bufferedReader != null) {
+				try {
+					bufferedReader.close() ;
+				} catch (IOException e) {
+					bufferedReader = null ;
+				}
+			}
+		}
+	}
+	
+	private HttpURLConnection setURLConnection (URL url) {
+		
+		HttpURLConnection conn = null ;
+		
+		try {
+		conn = (HttpURLConnection) url.openConnection() ;
+		// 객체 연결 설정 부분, 연결 시간, 데이터 대기 시간
+		conn.setConnectTimeout(util.CONNECT_DELAY_TIME) ;
+		conn.setReadTimeout(util.READ_DELAY_TIME) ;
+		conn.setRequestMethod(util.POST) ;
+
+		// Header Setting
+		// 컨트롤 캐쉬 설정
+		conn.setUseCaches(false) ;
+		// 타입설정(application/json) 형식으로 전송 (Request Body 전달시 application/json로 서버에 전달.)
+		//conn.setRequestProperty("Content-Type", "application/json") ;
+		// Server Response JSON Type
+		//conn.setRequestProperty("Accept", "application/json") ;
+
+		// Request, Response Type
+		conn.setDoInput(true) ;
+		conn.setDoOutput(true) ;
+		} catch (IOException e) {
+			e.printStackTrace() ; 
+		}
+		
+		return conn ;
+	}
+	
+	public ContentValues postRequest (AMRRecommendRequestData amrData) {
+		
+		try {
+			ContentValues jsonMsg = new ContentValues () ;
+			jsonMsg.put(util.DATA, this.makeJson(amrData)) ;
+							
+			Log.d (util.TAG + util.POST + ": ", "Request Data : " + jsonMsg.toString()) ;
+			
+			return jsonMsg ;
+		} catch (Exception e) {
+			e.printStackTrace();
+			
 			return null ;
 		}
 	}
 	
-	public ArrayList<String> getRecommendLists (String responseData) {
-		responseData = responseData ;
+	// Json Paser
+	public ArrayList<AMRData> getResponseArrays (String responseMsg) {
 
-		Log.d (util.TAG, responseData) ;
-		return null ;
-		/*‘track_id’: <track_id string>,
-		‘artist’: <string>,
-		‘title’: <string>,
-		‘url’: <string>
 		try {
-			JSONArray jsonArray =new JSONArray(responseData) ;
-			for (int i =0 ; i < jsonArray.length() ; i++) {
-				JSONObject body1 =jsonArray.getJSONObject(i) ;
-				if (body1 != null) {
-					JSONObject body2 =body1.getJSONObject("body") ;
-					if (body2 != null) {
-						JSONObject body3 =body2.getJSONObject("body") ;
-						if (body3 != null) {
-							JSONObject authUse =body3.getJSONObject("result") ;
-							if (authUse != null) {
-								StringTokenizer token =new StringTokenizer(authUse.getString("RESULT"), SPLIT) ;
-								ArrayList<String> response =new ArrayList<String> () ;
-								while (token.hasMoreTokens()) response.add(token.nextToken()) ;
-								
-								return response ;
-							}
-						}
-					}
-				}
-			}
-			
-			return null ;
-		} catch (JSONException e) {
-			e.printStackTrace() ;
-			Log.e ("JSON Exception", "responseData html or xml") ;
-			
-			return null ;
-		} catch (Exception e) {
-			return null ;
-		}*/
+			Log.d (util.TAG + "Response : " , "Response Data : " + responseMsg) ;
+		} catch (NullPointerException e) {
+			Log.e (util.TAG + "Response : " , "null") ;
+		}
+		return this.responsePaser(responseMsg) ;
 	}
 }
