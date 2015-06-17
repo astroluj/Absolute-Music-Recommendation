@@ -1,12 +1,15 @@
 package com.chartrecommend.adapter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 
 import com.chartrecommend.R;
 import com.chartrecommend.data.MusicData;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +26,7 @@ public class MusicAdapter extends BaseAdapter {
     
     // List view arrays
     private ArrayList<String> musicAlbumList;
-    private ArrayList<Bitmap> albumImageList;
+    private ArrayList<String> albumImageList;
     private ArrayList<String> musicTitleList;
     private ArrayList<String> musicArtistList;
     
@@ -33,7 +36,7 @@ public class MusicAdapter extends BaseAdapter {
     	
     	// ArrayList<String>
     	musicAlbumList = new ArrayList<String> () ;
-    	albumImageList = new ArrayList<Bitmap> () ;
+    	albumImageList = new ArrayList<String> () ;
     	musicTitleList = new ArrayList<String> () ;
     	musicArtistList = new ArrayList<String> () ;
     }
@@ -83,10 +86,10 @@ public class MusicAdapter extends BaseAdapter {
     }
     
     // AlbumImageList GetSet
-    public ArrayList<Bitmap> getAlbumImageList () {
+    public ArrayList<String> getAlbumImageList () {
     	return this.albumImageList ;
     }
-    public void setAlbumImageList (ArrayList<Bitmap> albumImageList) {
+    public void setAlbumImageList (ArrayList<String> albumImageList) {
     	this.albumImageList = albumImageList ;
     }
     
@@ -98,7 +101,7 @@ public class MusicAdapter extends BaseAdapter {
     	this.musicAlbumList = musicAlbumList ;
     }
     
-    public void putRecommendList (Bitmap albumImage, String artist, String title, String album) {
+    public void putRecommendList (String albumImage, String artist, String title, String album) {
     	// put
     	musicAlbumList.add(album) ;
     	musicArtistList.add(artist) ;
@@ -111,7 +114,7 @@ public class MusicAdapter extends BaseAdapter {
     	musicAlbumList.add(musicData.getAlbum()) ;
     	musicArtistList.add(musicData.getArtist()) ;
     	musicTitleList.add(musicData.getTitle()) ;
-    	albumImageList.add(musicData.getThumbnail()) ;
+    	albumImageList.add(musicData.getThumbnailSrc()) ;
     }
     
     public void putRecommendList (ArrayList<MusicData> musicDataList) {
@@ -125,8 +128,6 @@ public class MusicAdapter extends BaseAdapter {
     	musicAlbumList.removeAll(musicAlbumList) ;
     	musicArtistList.removeAll(musicArtistList) ;
     	musicTitleList.removeAll(musicTitleList) ;
-    	for (Bitmap bitmap : albumImageList)
-    		bitmap.recycle() ;
     	albumImageList.removeAll(albumImageList) ;
     }
     
@@ -138,13 +139,24 @@ public class MusicAdapter extends BaseAdapter {
             LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             listViewItem = layoutInflater.inflate(R.layout.music_item, null);
         }
+        
+        // Rank 설정
+        TextView rankTextView = (TextView) listViewItem.findViewById(R.id.rank_text) ;
+        rankTextView.setText((position + 1) + "") ;
+        
         // Album Bitmap을 얻는다. 
         ImageView albumImageView = (ImageView) listViewItem.findViewById (R.id.album_image);
-        Bitmap albumImage = albumImageList.get(position) ;
         
-        // Default Album Image
-        if (albumImage != null)
-        	albumImageView.setImageBitmap(albumImage) ;
+        // Thumbnail 설정
+        InputStream inputStream;
+		try {
+			inputStream = new URL (albumImageList.get(position)).openStream() ;
+			albumImageView.setImageBitmap(BitmapFactory.decodeStream(inputStream)) ;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
          
         // Title 설정 
         TextView titleTextView = (TextView) listViewItem.findViewById (R.id.title) ;

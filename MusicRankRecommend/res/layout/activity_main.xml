@@ -3,71 +3,101 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical"
     android:weightSum="100" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="40"
-        android:orientation="vertical" >
+        android:layout_weight="30"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="100" >
 
         <ImageButton
-            android:id="@+id/naver_music_button"
-            android:layout_width="match_parent"
+            android:id="@+id/naver_button"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="50"
             android:adjustViewBounds="true"
             android:background="@null"
-            android:onClick="naverMusicClick"
-            android:scaleType="fitXY"
-            android:src="@drawable/naver_music" />
+            android:onClick="naverClick"
+            android:scaleType="centerInside"
+            android:src="@drawable/naver_button_selector" />
+
+        <ImageButton
+            android:id="@+id/billboard_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:onClick="billboardClick"
+            android:scaleType="centerInside"
+            android:src="@drawable/billboard_button_selector" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="60"
+        android:layout_weight="30"
+        android:gravity="center"
         android:orientation="horizontal"
         android:weightSum="100" >
 
-        <LinearLayout
+        <ImageButton
+            android:id="@+id/itunes_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="50"
-            android:orientation="vertical"
-            android:weightSum="100" >
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:onClick="itunesClick"
+            android:scaleType="centerInside"
+            android:src="@drawable/itunes_button_selector" />
 
-            <ImageButton
-                android:id="@+id/daum_music_button"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="70"
-                android:adjustViewBounds="true"
-                android:background="@null"
-                android:onClick="daumMusicClick"
-                android:scaleType="fitXY"
-                android:src="@drawable/daum_music" />
-        </LinearLayout>
-
-        <LinearLayout
+        <ImageButton
+            android:id="@+id/gaon_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="50"
-            android:gravity="bottom"
-            android:orientation="vertical"
-            android:weightSum="100" >
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:onClick="gaonClick"
+            android:scaleType="centerInside"
+            android:src="@drawable/gaon_button_selector" />
+    </LinearLayout>
 
-            <ImageButton
-                android:id="@+id/melon_music_button"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="70"
-                android:adjustViewBounds="true"
-                android:background="@null"
-                android:onClick="melonMusicClick"
-                android:scaleType="fitXY"
-                android:src="@drawable/melon_music" />
-        </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="30"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="100" >
+
+        <ImageButton
+            android:id="@+id/gomtv_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:onClick="gomtvClick"
+            android:scaleType="centerInside"
+            android:src="@drawable/gomtv_button_selector" />
+
+        <ImageButton
+            android:id="@+id/mnet_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="50"
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:onClick="mnetClick"
+            android:scaleType="centerInside"
+            android:src="@drawable/mnet_button_selector" />
     </LinearLayout>
 
 </LinearLayout>

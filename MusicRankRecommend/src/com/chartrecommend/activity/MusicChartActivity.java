@@ -2,7 +2,7 @@ package com.chartrecommend.activity;
 
 import com.chartrecommend.R;
 import com.chartrecommend.adapter.MusicAdapter;
-import com.chartrecommend.network.MusicChartNetwork;
+import com.chartrecommend.parser.MusicChartParser;
 import com.chartrecommend.util.util;
 
 import android.app.Activity;
@@ -35,27 +35,25 @@ public class MusicChartActivity extends Activity {
 	}
 	
 	private void initializes(){
-		// MusicAdapter
-		musicAdapter = new MusicAdapter (getApplicationContext()) ;	
-		setMusicAdapter(getIntent().getStringExtra(util.URL_KEY)) ;
-		
 		// ListView
 		musicListView = (ListView) findViewById (R.id.music_list_view) ;
-		musicListView.setAdapter(musicAdapter);
-				
 		/* Listener for selecting a item */
 		musicListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
             	recommendService(musicAdapter, position) ;
             }
         });
+		
+		// MusicAdapter
+		setMusicAdapter(getIntent().getStringExtra(util.URL_KEY),
+				getIntent().getIntExtra(util.CASE_KEY, -1)) ;
 	}
 
-	private void setMusicAdapter (String url) {
-		MusicChartNetwork musicChartNetwork = new MusicChartNetwork();
-		musicAdapter.putRecommendList (
-				musicChartNetwork.getResponseArrays(
-						musicChartNetwork.sendData(url))) ;
+	private void setMusicAdapter (String url, int CASE) {
+		
+		musicAdapter = new MusicAdapter (getApplicationContext()) ;	
+		new MusicChartParser (MusicChartActivity.this,
+				musicAdapter, musicListView, CASE).execute(url) ;
 	}
 	
 	private void recommendService(MusicAdapter musicAdapter, int position) {

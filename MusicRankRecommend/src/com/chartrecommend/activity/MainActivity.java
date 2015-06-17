@@ -23,24 +23,40 @@ public class MainActivity extends Activity {
 	}
 	
 	// Naver music chart
-	public void naverMusicClick (View v) {
-		startMusicChartActivity (util.NAVER_CHART) ;
+	public void naverClick (View v) {
+		startMusicChartActivity (util.NAVER_CHART, util.NAVER) ;
 	}
 	
-	// Daum music chart
-	public void daumMusicClick (View v) {
-		startMusicChartActivity (util.DAUM_CHART) ;
+	// Billboard music chart
+	public void billboardClick (View v) {
+		startMusicChartActivity (util.BILLBOARD_CHART, util.BILLBOARD) ;
 	}
 	
-	// Melon music chart
-	public void melonMusicClick (View v) {
-		startMusicChartActivity (util.MELON_CHART) ;
+	// Itunes music chart
+	public void itunesClick (View v) {
+		startMusicChartActivity (util.ITUNES_CHART, util.ITUNES) ;
 	}
 	
-	private void startMusicChartActivity (String url) {
+	// Gaon music chart
+	public void gaonClick (View v) {
+		startMusicChartActivity (util.GAON_CHART, util.GAON) ;
+	}
+	
+	// GomTV music chart
+	public void gomtvClick (View v) {
+		startMusicChartActivity (util.GOMTV_CHART, util.GOMTV) ;
+	}
+	
+	// MNet music chart
+	public void mnetClick (View v) {
+		startMusicChartActivity (util.MNET_CHART, util.MNET) ;
+	}
+		
+	private void startMusicChartActivity (String url, int CASE) {
 		
 		Intent intent = new Intent (MainActivity.this, MusicChartActivity.class) ;
 		intent.putExtra(util.URL_KEY, url) ;
+		intent.putExtra(util.CASE_KEY, CASE) ;
 		
 		startActivityForResult(intent, REQUEST_CODE) ;
 	}

@@ -11,6 +11,16 @@
         android:orientation="horizontal"
         android:weightSum="100" >
 
+        <TextView
+            android:id="@+id/rank_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:layout_gravity="center"
+            android:textColor="#FFFFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
         <ImageView
             android:id="@+id/album_image"
             android:layout_width="0dp"
@@ -22,7 +32,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="85"
+            android:layout_weight="80"
             android:orientation="vertical" >
 
             <TextView
