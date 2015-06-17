@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 /**========================================== 
@@ -46,7 +47,7 @@ public class MusicAdapter extends BaseAdapter {
     }
     
     public int getCount() {
-        return musicAlbumList.size();
+        return this.musicAlbumList.size();
     }
     
     public Object getItem(int position) {
@@ -58,15 +59,15 @@ public class MusicAdapter extends BaseAdapter {
     }
     
     public int getMusicID(int position) {
-        return Integer.parseInt((musicAlbumList.get(position)));
+        return Integer.parseInt((this.musicAlbumList.get(position)));
     }
     
     public String getMusicArtist (int position) {
-    	return musicArtistList.get(position) ;
+    	return this.musicArtistList.get(position) ;
     }
     
     public String getMusicTitle (int position) {
-    	return musicTitleList.get(position) ;
+    	return this.musicTitleList.get(position) ;
     }
     
     // MusicArtistList GetSet

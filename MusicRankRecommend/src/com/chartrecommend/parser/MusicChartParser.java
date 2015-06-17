@@ -99,6 +99,7 @@ public class MusicChartParser extends AsyncTask<String, Void, ArrayList<MusicDat
 				int urlIndex = thumbnailSrc.indexOf('(') ;
 				if (urlIndex > 0)
 					thumbnailSrc = thumbnailSrc.substring(urlIndex + 1, thumbnailSrc.length() - 1) ;
+				else thumbnailSrc = thumbnailRows.get(i).attr("data-imagesrc") ;
 				
 				// Split str
 				String split = " Featuring " ;
@@ -110,6 +111,8 @@ public class MusicChartParser extends AsyncTask<String, Void, ArrayList<MusicDat
 				Log.d (TAG, thumbnailSrc + "  " + title + "  "  + artist) ;
 				musicDataList.add(new MusicData (thumbnailSrc, title, artist, null)) ;
 			}
+			
+			return musicDataList ;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -139,7 +142,7 @@ public class MusicChartParser extends AsyncTask<String, Void, ArrayList<MusicDat
         	musicAdapter.putRecommendList(result) ;
         	musicListView.setAdapter(musicAdapter) ;
         }
-      
+
         // Clear Progress
         progressDialog.dismiss() ;
     }
