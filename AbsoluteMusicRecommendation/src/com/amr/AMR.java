@@ -168,134 +168,137 @@ public class AMR {
 		ArrayList<AMRData> responsePaserDataArray = null ;
 		PostJson postJson = new PostJson () ;
 		
-		// Get Bonacell DB Track_ID
-		// POST Request
-		switch (CASE) {
-		case util.USER_REGISTER :
-		case util.USER_REMOVE :
-			// /user/register or remove
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), (amrData.getUserData().getIsRemove() == true) ?
-											util.URL_USER_REMOVE
-											: util.URL_USER_REGISTER)) ;
-			
-			break ;
-		case util.MUSIC_SIMILAR :
-			// /music/similar Request
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_SIMILAR)) ;
-			
-			break ;
-		case util.MUSIC_SEARCH :
-		case util.MUSIC_RECOMMEND :
-			try {
-				// /music/search
-				AMRData responsePaserData = postJson.getResponseArrays(
-						postJson.sendData(
-								postJson.postRequest(amrData),
-										util.URL_SEARCH)).get(0) ;
-				
-				amrData.setTrackID(responsePaserData.getTrackID()) ;
-				// Recommend Lists
-				// /music/recommend
+		try {
+			// Get Bonacell DB Track_ID
+			// POST Request
+			switch (CASE) {
+			case util.USER_REGISTER :
+			case util.USER_REMOVE :
+				// /user/register or remove
 				responsePaserDataArray = postJson.getResponseArrays(
 						postJson.sendData(
-								postJson.postRequest(amrData), util.URL_RECOMMEND)) ;
+								postJson.postRequest(amrData), (amrData.getUserData().getIsRemove() == true) ?
+												util.URL_USER_REMOVE
+												: util.URL_USER_REGISTER)) ;
 				
-			} catch (IndexOutOfBoundsException e) {
-				// dis-exist in Bonacell DB
-				// feature 가능 하면 feature 추출
-				if (amrData.getFeature () != null && !repeatFlag) {
+				break ;
+			case util.MUSIC_SIMILAR :
+				// /music/similar Request
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_SIMILAR)) ;
+				
+				break ;
+			case util.MUSIC_SEARCH :
+			case util.MUSIC_RECOMMEND :
+				try {
+					// /music/search
+					AMRData responsePaserData = postJson.getResponseArrays(
+							postJson.sendData(
+									postJson.postRequest(amrData),
+											util.URL_SEARCH)).get(0) ;
 					
-					repeatFlag = true ;
+					amrData.setTrackID(responsePaserData.getTrackID()) ;
+					// Recommend Lists
+					// /music/recommend
+					responsePaserDataArray = postJson.getResponseArrays(
+							postJson.sendData(
+									postJson.postRequest(amrData), util.URL_RECOMMEND)) ;
 					
+				} catch (IndexOutOfBoundsException e) {
+					// dis-exist in Bonacell DB
+					// feature 가능 하면 feature 추출
+					if (amrData.getFeature () != null && !repeatFlag) {
+						
+						repeatFlag = true ;
+						
+					}
+					// 가능 못하면 DB에서 찾을 수 없음
+					else repeatFlag = false ;
 				}
-				// 가능 못하면 DB에서 찾을 수 없음
-				else repeatFlag = false ;
+				
+				break ;
+			case util.USER_PLAY :
+				// /user/play
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_USER_PLAY)) ;
+				
+				break ;
+			case util.USER_SHARED_HISTORY :
+				// /user/shared_history
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_USER_SHARED_HISTORY)) ;
+				
+				break ;
+			case util.USER_NONSHARED_HISTORY :
+				// /user/nonshared_history
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_USER_NON_SHARED_HISTORY)) ;
+				
+				break ;
+			case util.MUSIC_USERS :
+				// /music/user
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_MUSIC_USER)) ;
+				
+				break ;
+			case util.USER_MATE :
+				// /user/mate
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_USER_MATE)) ;
+				
+				break ;
+			case util.USER_UNMATE :
+				// /user/unmate
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_USER_UNMATE)) ;
+				
+				break ;
+			case util.USER_MATE_LIST :
+				// /user/matelist
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_USER_MATE_LIST)) ;
+				
+				break ;
+			case util.REVIEW_WRITE :
+				// /review/write
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_REVIEW_WRITE)) ;
+				
+				break ;
+			case util.MUSIC_REVIEW :
+				// /music/review
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_MUSIC_REVIEW)) ;
+				
+				break ;
+			case util.USER_REVIEW :
+				// /user/review
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_USER_REVIEW)) ;
+				
+				break ;
+			case util.USER_FEED :
+				// /user/feed
+				responsePaserDataArray = postJson.getResponseArrays(
+						postJson.sendData(
+								postJson.postRequest(amrData), util.URL_USER_FEED)) ;
+				
+				break ;
 			}
-			
-			break ;
-		case util.USER_PLAY :
-			// /user/play
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_USER_PLAY)) ;
-			
-			break ;
-		case util.USER_SHARED_HISTORY :
-			// /user/shared_history
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_USER_SHARED_HISTORY)) ;
-			
-			break ;
-		case util.USER_NONSHARED_HISTORY :
-			// /user/nonshared_history
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_USER_NON_SHARED_HISTORY)) ;
-			
-			break ;
-		case util.MUSIC_USERS :
-			// /music/user
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_MUSIC_USER)) ;
-			
-			break ;
-		case util.USER_MATE :
-			// /user/mate
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_USER_MATE)) ;
-			
-			break ;
-		case util.USER_UNMATE :
-			// /user/unmate
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_USER_UNMATE)) ;
-			
-			break ;
-		case util.USER_MATE_LIST :
-			// /user/matelist
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_USER_MATE_LIST)) ;
-			
-			break ;
-		case util.REVIEW_WRITE :
-			// /review/write
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_REVIEW_WRITE)) ;
-			
-			break ;
-		case util.MUSIC_REVIEW :
-			// /music/review
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_MUSIC_REVIEW)) ;
-			
-			break ;
-		case util.USER_REVIEW :
-			// /user/review
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_USER_REVIEW)) ;
-			
-			break ;
-		case util.USER_FEED :
-			// /user/feed
-			responsePaserDataArray = postJson.getResponseArrays(
-					postJson.sendData(
-							postJson.postRequest(amrData), util.URL_USER_FEED)) ;
-			
-			break ;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
 		return responsePaserDataArray ;
 	}
 }
