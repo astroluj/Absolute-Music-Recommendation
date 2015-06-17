@@ -44,4 +44,14 @@ public class MainActivity extends Activity {
 		
 		startActivityForResult(intent, REQUEST_CODE) ;
 	}
+	
+	protected void onActivityResult (int requestCode, int resultCode, Intent intent) {
+		super.onActivityResult(requestCode, resultCode, intent) ;
+		
+		if (requestCode == REQUEST_CODE) {
+			if (intent != null) {
+				
+			}
+		}
+	}
 }

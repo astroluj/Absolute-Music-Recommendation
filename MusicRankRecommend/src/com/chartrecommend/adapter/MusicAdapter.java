@@ -3,6 +3,7 @@ package com.chartrecommend.adapter;
 import java.util.ArrayList;
 
 import com.chartrecommend.R;
+import com.chartrecommend.data.MusicData;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -103,6 +104,20 @@ public class MusicAdapter extends BaseAdapter {
     	musicArtistList.add(artist) ;
     	musicTitleList.add(title) ;
     	albumImageList.add(albumImage) ;
+    }
+    
+    public void putRecommendList (MusicData musicData) {
+    	// put
+    	musicAlbumList.add(musicData.getAlbum()) ;
+    	musicArtistList.add(musicData.getArtist()) ;
+    	musicTitleList.add(musicData.getTitle()) ;
+    	albumImageList.add(musicData.getThumbnail()) ;
+    }
+    
+    public void putRecommendList (ArrayList<MusicData> musicDataList) {
+    	
+    	for (MusicData musicData : musicDataList) 
+    		putRecommendList (musicData) ;
     }
     
     public void clearAdapter () {

@@ -81,8 +81,6 @@ public class MusicChartNetwork extends MusicChartParser {
 		conn = (HttpURLConnection) url.openConnection() ;
 		// 객체 연결 설정 부분, 연결 시간, 데이터 대기 시간
 		conn.setConnectTimeout(util.CONNECT_DELAY_TIME) ;
-		conn.setReadTimeout(util.READ_DELAY_TIME) ;
-		conn.setRequestMethod(util.GET) ;
 
 		// Header Setting
 		// 컨트롤 캐쉬 설정

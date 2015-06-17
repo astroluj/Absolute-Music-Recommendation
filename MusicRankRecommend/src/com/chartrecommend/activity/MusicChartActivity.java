@@ -53,8 +53,9 @@ public class MusicChartActivity extends Activity {
 
 	private void setMusicAdapter (String url) {
 		MusicChartNetwork musicChartNetwork = new MusicChartNetwork();
-		musicChartNetwork.getResponseArrays(
-				musicChartNetwork.sendData(url)) ;
+		musicAdapter.putRecommendList (
+				musicChartNetwork.getResponseArrays(
+						musicChartNetwork.sendData(url))) ;
 	}
 	
 	private void recommendService(MusicAdapter musicAdapter, int position) {
