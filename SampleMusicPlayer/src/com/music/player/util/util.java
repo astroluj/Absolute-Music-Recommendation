@@ -33,9 +33,7 @@ public class util {
 	
 	public static final String UNKNOWN = "<unknown>" ;
 	
-	public static final String AMR_FILTER= "com.amr.service.AMRService" ;
 	
 	public static final String MEDIA_PLAY_FILTER = "content://media/external/audio/media/" ;
 	public static final long INTERVAL = 1000 ;
-	public static final String MUSIC_RECOMMEND_RESPONSE_FILTER = "com.music.player.response" ;
 }
