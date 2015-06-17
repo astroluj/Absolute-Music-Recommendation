@@ -1,8 +1,11 @@
-package com.music.player;
+package com.music.player.adapter;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import com.music.player.R;
+import com.music.player.util.util;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;

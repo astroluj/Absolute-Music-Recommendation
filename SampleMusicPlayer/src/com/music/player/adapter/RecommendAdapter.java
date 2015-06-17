@@ -1,6 +1,9 @@
-package com.music.player;
+package com.music.player.adapter;
 
 import java.util.ArrayList;
+
+import com.music.player.R;
+import com.music.player.util.util;
 
 import android.content.Context;
 import android.view.LayoutInflater;

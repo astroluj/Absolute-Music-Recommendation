@@ -1,4 +1,4 @@
-package com.music.player;
+package com.music.player.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
