@@ -1,8 +1,11 @@
-package com.music.player;
+package com.chartrecommend.adapter;
 
 import java.util.ArrayList;
 
+import com.chartrecommend.R;
+
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,25 +13,28 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class RecommendAdapter extends BaseAdapter {
-
-	private Context context ;
+/**========================================== 
+ *              Adapter class 
+ * ==========================================*/
+public class MusicAdapter extends BaseAdapter {
 	
-	// List view arrays
-    private ArrayList<String> musicIDList;
+    private Context context;
+    
+    // List view arrays
+    private ArrayList<String> musicAlbumList;
+    private ArrayList<Bitmap> albumImageList;
     private ArrayList<String> musicTitleList;
     private ArrayList<String> musicArtistList;
-    private ArrayList<String> musicUriList;
     
-    public RecommendAdapter (Context context) {
+    public MusicAdapter(Context context){
     	
-    	this.context = context ;
+    	this.context =  context ;
     	
     	// ArrayList<String>
-    	musicIDList = new ArrayList<String> () ;
+    	musicAlbumList = new ArrayList<String> () ;
+    	albumImageList = new ArrayList<Bitmap> () ;
     	musicTitleList = new ArrayList<String> () ;
     	musicArtistList = new ArrayList<String> () ;
-    	musicUriList = new ArrayList<String> () ;
     }
     
     public boolean deleteSelected(int musicIndex){
@@ -36,7 +42,7 @@ public class RecommendAdapter extends BaseAdapter {
     }
     
     public int getCount() {
-        return musicIDList.size();
+        return musicAlbumList.size();
     }
     
     public Object getItem(int position) {
@@ -48,38 +54,15 @@ public class RecommendAdapter extends BaseAdapter {
     }
     
     public int getMusicID(int position) {
-        return Integer.parseInt((musicIDList.get(position)));
+        return Integer.parseInt((musicAlbumList.get(position)));
     }
     
     public String getMusicArtist (int position) {
-    	try {
-    		String artist = musicArtistList.get(position) ;
-    		return (artist.equals(util.UNKNOWN)) ? null : artist ;
-    	} catch (NullPointerException e) {
-    		return null ;
-    	}
-    	
+    	return musicArtistList.get(position) ;
     }
     
     public String getMusicTitle (int position) {
-    	try {
-    		String title = musicTitleList.get(position) ;
-    		return (title.equals(util.UNKNOWN)) ? null : title ;
-    	} catch (NullPointerException e) {
-    		return null ;
-    	}
-    }
-    
-    public String getMusicUri (int position) {
-		return musicUriList.get(position) ;
-    }
-    
-    // MusicUriList GetSet
-    public ArrayList<String> getMusicUriList () {
-    	return this.musicUriList ;
-    }
-    public void setMusicUriList (ArrayList<String> musicUriList) {
-    	this.musicUriList = musicUriList ;
+    	return musicTitleList.get(position) ;
     }
     
     // MusicArtistList GetSet
@@ -98,57 +81,69 @@ public class RecommendAdapter extends BaseAdapter {
     	this.musicTitleList = musicTitleList ;
     }
     
+    // AlbumImageList GetSet
+    public ArrayList<Bitmap> getAlbumImageList () {
+    	return this.albumImageList ;
+    }
+    public void setAlbumImageList (ArrayList<Bitmap> albumImageList) {
+    	this.albumImageList = albumImageList ;
+    }
+    
     // MusicIDList GetSet
     public ArrayList<String> getMusicIDList () {
-    	return this.musicIDList ;
+    	return this.musicAlbumList ;
     }
-    public void setMusicIDList (ArrayList<String> musicIDList) {
-    	this.musicIDList = musicIDList ;
+    public void setMusicIDList (ArrayList<String> musicAlbumList) {
+    	this.musicAlbumList = musicAlbumList ;
     }
-
-    public void putRecommendList (String track_id, String artist, String title, String uri) {
+    
+    public void putRecommendList (Bitmap albumImage, String artist, String title, String album) {
     	// put
-    	musicIDList.add(track_id) ;
+    	musicAlbumList.add(album) ;
     	musicArtistList.add(artist) ;
     	musicTitleList.add(title) ;
-    	musicUriList.add(uri) ;
+    	albumImageList.add(albumImage) ;
     }
     
     public void clearAdapter () {
     	// Remove all
-    	musicIDList.removeAll(musicIDList) ;
+    	musicAlbumList.removeAll(musicAlbumList) ;
     	musicArtistList.removeAll(musicArtistList) ;
     	musicTitleList.removeAll(musicTitleList) ;
-    	musicUriList.removeAll(musicUriList) ;
+    	for (Bitmap bitmap : albumImageList)
+    		bitmap.recycle() ;
+    	albumImageList.removeAll(albumImageList) ;
     }
     
-	public View getView(int position, View convertView, ViewGroup parent) {
-
-		View listViewItem = convertView ; 
+    public View getView(int position, View convertView, ViewGroup parent) {
+    	
+        View listViewItem = convertView ; 
         if (listViewItem == null) {
             // Item.xml을 Inflate해 Layout 구성된 View를 얻는다.
             LayoutInflater layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            listViewItem = layoutInflater.inflate(R.layout.recommend_item, null);
+            listViewItem = layoutInflater.inflate(R.layout.music_item, null);
         }
         // Album Bitmap을 얻는다. 
         ImageView albumImageView = (ImageView) listViewItem.findViewById (R.id.album_image);
+        Bitmap albumImage = albumImageList.get(position) ;
+        
         // Default Album Image
-        albumImageView.setImageResource(R.drawable.equalizer);
+        if (albumImage != null)
+        	albumImageView.setImageBitmap(albumImage) ;
          
         // Title 설정 
         TextView titleTextView = (TextView) listViewItem.findViewById (R.id.title) ;
-        String title = musicTitleList.get(position) ;
-        if (title == null)
-        	titleTextView.setText("비슷한 음악을 찾을 수 없습니다.") ;
-        else {
-        	titleTextView.setText(title + "  ") ;
-        	// Artist 설정
-            TextView artistTextView = (TextView) listViewItem.findViewById(R.id.artist) ;
-            artistTextView.setText(musicArtistList.get(position)) ;      
-        }
+        titleTextView.setText(musicTitleList.get(position)) ;
+         
+        // Artist 설정
+        TextView artistTextView = (TextView) listViewItem.findViewById(R.id.artist) ;
+        artistTextView.setText(musicArtistList.get(position)) ;            
  
+        // Album 설정
+        TextView albumTextView = (TextView) listViewItem.findViewById(R.id.album) ;
+        albumTextView.setText(musicAlbumList.get(position)) ;
+        
         //구성된 ListView Item을 리턴해 준다.
         return listViewItem;
-	}
-
+    }
 }

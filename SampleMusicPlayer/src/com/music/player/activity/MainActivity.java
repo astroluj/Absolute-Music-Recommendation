@@ -1,16 +1,14 @@
-package com.music.player;
+package com.music.player.activity;
 
+
+import com.music.player.R;
+import com.music.player.adapter.MusicAdapter;
+import com.music.player.util.util;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;

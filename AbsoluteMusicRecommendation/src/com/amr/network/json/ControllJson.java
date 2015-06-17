@@ -61,12 +61,12 @@ public class ControllJson {
 		return jsonMsg ;
 	}
 	
-	// Paser
-	protected ArrayList<AMRData> responsePaser (String responseMsg) {
+	// Parser
+	protected ArrayList<AMRData> responseParser (String responseMsg) {
 		
 		try {
 			// Init Response message Keys containers
-			ArrayList<AMRData> paserArray = new ArrayList<AMRData> () ;
+			ArrayList<AMRData> parserArray = new ArrayList<AMRData> () ;
 			Boolean isAdditionalItems = null ;
 			
 			JSONObject jsonObject = new JSONObject(responseMsg) ;
@@ -94,25 +94,25 @@ public class ControllJson {
 								jsonArray = jsonObject.getJSONArray(util.MATES) ;
 							} catch (JSONException e5) {
 								// Error Messages
-								JSONObject paserData = jsonObject.getJSONObject(util.ERROR) ;
+								JSONObject parserData = jsonObject.getJSONObject(util.ERROR) ;
 								
-								AMRData responsePaserData = new AMRData () ;
+								AMRData responseParserData = new AMRData () ;
 								
 								try {
-									responsePaserData.setErrorCode(paserData.getInt(util.ERROR_CODE)) ;
+									responseParserData.setErrorCode(parserData.getInt(util.ERROR_CODE)) ;
 								} catch (JSONException e6) {
-									responsePaserData.setErrorCode(null) ;
+									responseParserData.setErrorCode(null) ;
 								}
 								
 								try {
-									responsePaserData.setErrorDescription(paserData.getString(util.ERROR_DESCRIPTION)) ;
+									responseParserData.setErrorDescription(parserData.getString(util.ERROR_DESCRIPTION)) ;
 								} catch (JSONException e6) {
-									responsePaserData.setErrorDescription(null) ;
+									responseParserData.setErrorDescription(null) ;
 								}
 								
-								paserArray.add(responsePaserData) ;
+								parserArray.add(responseParserData) ;
 								
-								return paserArray ;
+								return parserArray ;
 							}
 						}
 					}
@@ -121,115 +121,115 @@ public class ControllJson {
 
 			for (int i = 0, size = jsonArray.length() ; i < size ; i++) {
 				
-				JSONObject paserData = jsonArray.getJSONObject(i) ;
+				JSONObject parserData = jsonArray.getJSONObject(i) ;
 				
-				AMRData responsePaserData = new AMRData () ;
+				AMRData responseParserData = new AMRData () ;
 				
-				// Keys Paser
+				// Keys Parser
 				try {
-					responsePaserData.setTrackID(paserData.getString(util.TRACK_ID)) ;
+					responseParserData.setTrackID(parserData.getString(util.TRACK_ID)) ;
 				} catch (JSONException e) {
-					responsePaserData.setTrackID(null) ;
+					responseParserData.setTrackID(null) ;
 				}
 				
 				try {
-					responsePaserData.setUserID (paserData.getString(util.USER_ID)) ;
+					responseParserData.setUserID (parserData.getString(util.USER_ID)) ;
 				} catch (JSONException e) {
-					responsePaserData.setUserID(null) ;
+					responseParserData.setUserID(null) ;
 				}
 				
 				try {
-					responsePaserData.setArtist(paserData.getString(util.ARTIST)) ;
+					responseParserData.setArtist(parserData.getString(util.ARTIST)) ;
 				} catch (JSONException e) {
-					responsePaserData.setArtist(null) ;
+					responseParserData.setArtist(null) ;
 				}
 				
 				try {
-					responsePaserData.setTitle(paserData.getString(util.TITLE)) ;
+					responseParserData.setTitle(parserData.getString(util.TITLE)) ;
 				} catch (JSONException e) {
-					responsePaserData.setTitle(null) ;
+					responseParserData.setTitle(null) ;
 				}
 				
 				try {
-					responsePaserData.setAlbum(paserData.getString(util.ALBUM)) ;
+					responseParserData.setAlbum(parserData.getString(util.ALBUM)) ;
 				} catch (JSONException e) {
-					responsePaserData.setAlbum(null) ;
+					responseParserData.setAlbum(null) ;
 				}
 				
 				try {
-					responsePaserData.setURL(paserData.getString(util.URL)) ;
+					responseParserData.setURL(parserData.getString(util.URL)) ;
 				} catch (JSONException e) {
-					responsePaserData.setURL(null) ;
+					responseParserData.setURL(null) ;
 				}
 				
 				try {
-					responsePaserData.setTimeStampe(paserData.getString(util.TIME_STAMP));
+					responseParserData.setTimeStampe(parserData.getString(util.TIME_STAMP));
 				} catch (JSONException e) {
-					responsePaserData.setTimeStampe(null) ;
+					responseParserData.setTimeStampe(null) ;
 				}
 				
 				try {
-					responsePaserData.setContent(paserData.getString(util.CONTENT));
+					responseParserData.setContent(parserData.getString(util.CONTENT));
 				} catch (JSONException e) {
-					responsePaserData.setContent(null) ;
+					responseParserData.setContent(null) ;
 				}
 				
 				try {
-					responsePaserData.setScore(paserData.getDouble(util.SCORE)) ;
+					responseParserData.setScore(parserData.getDouble(util.SCORE)) ;
 				} catch (JSONException e) {
-					responsePaserData.setScore(null) ;
+					responseParserData.setScore(null) ;
 				}
 				
 				try {
-					responsePaserData.setAdditionalItems(isAdditionalItems) ;
+					responseParserData.setAdditionalItems(isAdditionalItems) ;
 				} catch (Exception e) {
-					responsePaserData.setAdditionalItems(null) ;
+					responseParserData.setAdditionalItems(null) ;
 				}
 				
 				try {
 					// Init Response message Keys containers
-					ArrayList<AMRData> subPaserArray = new ArrayList<AMRData> () ;
+					ArrayList<AMRData> subParserArray = new ArrayList<AMRData> () ;
 					
-					JSONArray subJsonArray = paserData.getJSONArray(util.TRACKS) ;
+					JSONArray subJsonArray = parserData.getJSONArray(util.TRACKS) ;
 					
 					for (int j = 0, subSize = jsonArray.length() ; j < subSize ; j++) {
 						
-						JSONObject subPaserData = subJsonArray.getJSONObject(i) ;
+						JSONObject subParserData = subJsonArray.getJSONObject(i) ;
 						
 						AMRData trackData = new AMRData () ;
 						
 						try {
-							trackData.setTrackID(subPaserData.getString(util.TRACK_ID)) ;
+							trackData.setTrackID(subParserData.getString(util.TRACK_ID)) ;
 						} catch (JSONException e) {
 							trackData.setTrackID(null) ;
 						}
 						
 						try {
-							trackData.setArtist(subPaserData.getString(util.ARTIST)) ;
+							trackData.setArtist(subParserData.getString(util.ARTIST)) ;
 						} catch (JSONException e) {
 							trackData.setArtist(null) ;
 						}
 						
 						try {
-							trackData.setTitle(subPaserData.getString(util.TITLE)) ;
+							trackData.setTitle(subParserData.getString(util.TITLE)) ;
 						} catch (JSONException e) {
 							trackData.setTitle(null) ;
 						}
 						
 						// add Pasing Datas
-						subPaserArray.add(trackData) ;
+						subParserArray.add(trackData) ;
 					}
 					
-					responsePaserData.setTrack(subPaserArray) ;
+					responseParserData.setTrack(subParserArray) ;
 				} catch (JSONException e) {
-					responsePaserData.setTrack(null) ;
+					responseParserData.setTrack(null) ;
 				}
 				
 				// add Pasing Datas
-				paserArray.add(responsePaserData) ;
+				parserArray.add(responseParserData) ;
 			}
 			
-			return paserArray ;
+			return parserArray ;
 		} catch (Exception e) {
 			e.printStackTrace();
 

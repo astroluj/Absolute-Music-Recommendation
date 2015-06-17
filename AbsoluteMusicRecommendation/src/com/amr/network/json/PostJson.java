@@ -149,7 +149,7 @@ public class PostJson extends ControllJson {
 		}
 	}
 	
-	// Json Paser
+	// Json Parser
 	public ArrayList<AMRData> getResponseArrays (String responseMsg) {
 
 		try {
@@ -157,6 +157,6 @@ public class PostJson extends ControllJson {
 		} catch (NullPointerException e) {
 			Log.e (util.TAG + "Response : " , "null") ;
 		}
-		return this.responsePaser(responseMsg) ;
+		return this.responseParser(responseMsg) ;
 	}
 }

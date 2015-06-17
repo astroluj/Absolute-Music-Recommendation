@@ -1,4 +1,4 @@
-package com.music.player;
+package com.music.player.activity;
 
 
 import java.io.IOException;
@@ -7,6 +7,11 @@ import java.util.Random;
 
 import com.amr.aidl.amrAIDL;
 import com.amr.data.AMRData;
+import com.music.player.R;
+import com.music.player.adapter.MusicAdapter;
+import com.music.player.adapter.RecommendAdapter;
+import com.music.player.thread.MusicSeekBarThread;
+import com.music.player.util.util;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;

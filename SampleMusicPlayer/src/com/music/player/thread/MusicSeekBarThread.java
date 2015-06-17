@@ -1,4 +1,4 @@
-package com.music.player;
+package com.music.player.thread;
 
 import android.os.Handler;
 
