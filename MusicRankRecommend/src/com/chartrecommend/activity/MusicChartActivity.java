@@ -10,6 +10,7 @@ import com.chartrecommend.adapter.RecommendAdapter;
 import com.chartrecommend.parser.MusicChartParser;
 import com.chartrecommend.util.Scale;
 import com.chartrecommend.util.util;
+import com.google.android.youtube.player.YouTubePlayerView;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -25,8 +26,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 public class MusicChartActivity extends Activity {
 
@@ -38,10 +39,12 @@ public class MusicChartActivity extends Activity {
 	private Scale scale ;
 	private AMR amr ;
 	
+	private YouTubePlayerView youtubeView ;
+	
 	// Task-Networking 
 	AsyncTask<String, Void, ArrayList<AMRData>> asyncTask ;
 		
-	private LinearLayout linearLayout ;
+	private RelativeLayout relativeLayout ;
 	// Top100 List
 	private ListView musicListView;
 	// Recommend List 
@@ -72,7 +75,15 @@ public class MusicChartActivity extends Activity {
 		getWindowManager ().getDefaultDisplay().getMetrics(disM) ;
 		scale =  new Scale (disM) ;
 		
-		linearLayout = (LinearLayout) findViewById (R.id.linear_layout) ;
+		// Youtube View Dynamic constuructor
+		/*youtubeView = new YouTubePlayerView(getApplicationContext()) ;
+		youtubeView.initialize(util.YOUTTUBE_API_KEY, getApplicationContext()) ;
+		youtubeView.setVisibility(View.GONE) ;
+		youtubeView.setLayoutParams(new LayoutParams (
+				LinearLayout.LayoutParams.WRAP_CONTENT,
+				LinearLayout.LayoutParams.WRAP_CONTENT));*/
+		
+		relativeLayout = (RelativeLayout) findViewById (R.id.relative_layout) ;
 		
 		// MusicAdapter
 		musicAdapter = new MusicAdapter (getApplicationContext()) ;	
@@ -84,9 +95,8 @@ public class MusicChartActivity extends Activity {
 		recommendListView.setScrollbarFadingEnabled(false) ;
 		recommendListView.setVisibility(View.GONE) ;
 		recommendListView.setLayoutParams(new LayoutParams(
-				LinearLayoutCompat.LayoutParams.MATCH_PARENT,
+				RelativeLayout.LayoutParams.MATCH_PARENT,
 				(int)(scale.getScaleHeight() * 25 / 100))) ;
-		linearLayout.addView(recommendListView) ;
 		
 		/* Listener for selecting a item */
 		recommendListView.setOnItemClickListener(new ListView.OnItemClickListener() {
@@ -107,16 +117,24 @@ public class MusicChartActivity extends Activity {
 		// Music ListView
 		musicListView = new ListView (getApplicationContext()) ;
 		musicListView.setScrollbarFadingEnabled(false) ;
-		setMusicListViewLayout(false) ;
+		musicListView.setLayoutParams(new LayoutParams(
+				LinearLayoutCompat.LayoutParams.MATCH_PARENT,
+				LinearLayoutCompat.LayoutParams.MATCH_PARENT)) ;
+		
+		// View add indexing
+		relativeLayout.addView(musicListView) ;
+		relativeLayout.addView(recommendListView) ;
+		
 		/* Listener for selecting a item */
 		musicListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
             	
-            	if (recommendListView.getVisibility() == View.GONE) {
+            	if (recommendListView.getVisibility() == View.GONE) 
             		recommendListView.setVisibility(View.VISIBLE) ;
-            		
-            		// MusicListView Size change
-            		setMusicListViewLayout(true) ;
+            	
+            	if (youtubeView.getVisibility() == View.GONE) {
+            		youtubeView.setVisibility(View.VISIBLE) ;
+            		relativeLayout.addView(youtubeView) ;
             	}
             		
         		recommendService(position) ;
@@ -130,9 +148,6 @@ public class MusicChartActivity extends Activity {
 				
 				if (recommendListView.getVisibility() == View.VISIBLE) {
             		recommendListView.setVisibility(View.GONE) ;
-            		
-            		// MusicListView Size change
-            		setMusicListViewLayout(false) ;
 				}
 			}
 			
@@ -147,25 +162,6 @@ public class MusicChartActivity extends Activity {
 				getIntent().getIntExtra(util.CASE_KEY, -1)) ;
 	}
 
-	private void setMusicListViewLayout (boolean isVisibleRecommendView) {
-		
-		if (isVisibleRecommendView)
-			musicListView.setLayoutParams(new LayoutParams(
-					LinearLayoutCompat.LayoutParams.MATCH_PARENT,
-					(int)(scale.getScaleHeight() * 75 / 100))) ;
-		else 
-			musicListView.setLayoutParams(new LayoutParams(
-					LinearLayoutCompat.LayoutParams.MATCH_PARENT,
-					LinearLayoutCompat.LayoutParams.MATCH_PARENT)) ;
-		
-		// old remove
-		if (linearLayout.getChildCount() == 2)
-			linearLayout.removeViewAt(1) ;
-		
-		// new Insert
-		linearLayout.addView(musicListView) ;
-	}
-	
 	private void setMusicAdapter (String url, int CASE) {
 		
 		new MusicChartParser (MusicChartActivity.this,

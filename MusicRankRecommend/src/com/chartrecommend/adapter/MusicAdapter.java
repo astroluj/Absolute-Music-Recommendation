@@ -2,6 +2,7 @@ package com.chartrecommend.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -153,10 +154,8 @@ public class MusicAdapter extends BaseAdapter {
 		try {
 			inputStream = new URL (albumImageList.get(position)).openStream() ;
 			albumImageView.setImageBitmap(BitmapFactory.decodeStream(inputStream)) ;
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();
+			albumImageView.setImageResource(R.drawable.equalizer) ;
 		}
          
         // Title 설정 

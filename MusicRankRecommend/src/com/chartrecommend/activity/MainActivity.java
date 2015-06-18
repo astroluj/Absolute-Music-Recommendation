@@ -24,12 +24,12 @@ public class MainActivity extends Activity {
 	
 	// Naver music chart
 	public void naverClick (View v) {
-		startMusicChartActivity (util.NAVER_CHART, util.NAVER) ;
+		startMusicChartActivity (util.NAVER_DOMESTIC_CHART, util.NAVER) ;
 	}
 	
 	// Billboard music chart
 	public void billboardClick (View v) {
-		startMusicChartActivity (util.BILLBOARD_CHART, util.BILLBOARD) ;
+		startMusicChartActivity (util.BILLBOARD_HOT_100_CHART, util.BILLBOARD) ;
 	}
 	
 	// Itunes music chart
@@ -39,17 +39,12 @@ public class MainActivity extends Activity {
 	
 	// Gaon music chart
 	public void gaonClick (View v) {
-		startMusicChartActivity (util.GAON_CHART, util.GAON) ;
-	}
-	
-	// GomTV music chart
-	public void gomtvClick (View v) {
-		startMusicChartActivity (util.GOMTV_CHART, util.GOMTV) ;
+		startMusicChartActivity (util.GAON_WEEK_TOTAL_DIGITAL_CHART, util.GAON) ;
 	}
 	
 	// MNet music chart
 	public void mnetClick (View v) {
-		startMusicChartActivity (util.MNET_CHART, util.MNET) ;
+		startMusicChartActivity (util.MNET_REAL_TIME_TOTAL_CHART, util.MNET) ;
 	}
 		
 	private void startMusicChartActivity (String url, int CASE) {
