@@ -1,5 +1,7 @@
 package com.amr.network.json;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -23,29 +25,63 @@ public class ControllJson {
 		try {
 			JSONObject jsonObject = new JSONObject() ;
 			
-			if (amrData.getFeature() != null) 
-				jsonObject.put(util.FEATURE, amrData.getFeature()) ;
+			if (amrData.getFeature() != null)
+				try {
+					jsonObject.put(util.FEATURE, URLEncoder.encode(amrData.getFeature(), util.UTF_8)) ;
+				} catch (UnsupportedEncodingException e) {
+					jsonObject.put(util.FEATURE, amrData.getFeature()) ;
+				}
 			
 			if (amrData.getTrackID() != null)
-				jsonObject.put(util.TRACK_ID, amrData.getTrackID()) ;
+				try {
+					jsonObject.put(util.TRACK_ID, URLEncoder.encode(amrData.getTrackID(), util.UTF_8)) ;
+				} catch (UnsupportedEncodingException e) {
+					jsonObject.put(util.TRACK_ID, amrData.getTrackID()) ;
+				}
 			
 			if (amrData.getArtist() != null)
-				jsonObject.put(util.ARTIST, amrData.getArtist()) ;
+				try {
+					jsonObject.put(util.ARTIST, URLEncoder.encode(amrData.getArtist(), util.UTF_8)) ;
+				} catch (UnsupportedEncodingException e) {
+					jsonObject.put(util.ARTIST, amrData.getArtist()) ;
+				}
 			
 			if (amrData.getTitle() != null)
-				jsonObject.put(util.TITLE, amrData.getTitle()) ;
+				try {
+					jsonObject.put(util.TITLE, URLEncoder.encode(amrData.getTitle(), util.UTF_8)) ;
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			
 			if (amrData.getAlbum() != null)
-				jsonObject.put(util.ALBUM, amrData.getAlbum()) ;
+				try {
+					jsonObject.put(util.ALBUM, URLEncoder.encode(amrData.getAlbum(), util.UTF_8)) ;
+				} catch (UnsupportedEncodingException e) {
+					jsonObject.put(util.ALBUM,amrData.getAlbum()) ;
+					e.printStackTrace();
+				}
 			
 			if (amrData.getContent() != null)
-				jsonObject.put(util.CONTENT, amrData.getContent()) ;
+				try {
+					jsonObject.put(util.CONTENT, URLEncoder.encode(amrData.getContent(), util.UTF_8)) ;
+				} catch (UnsupportedEncodingException e) {
+					jsonObject.put(util.CONTENT, amrData.getContent()) ;
+				}
 			
-			if (amrData.getUserData() != null) 
-				jsonObject.put(amrData.getUserData().getName(), amrData.getUserData().getUserID()) ;
+			if (amrData.getUserData() != null)
+				try {
+					jsonObject.put(amrData.getUserData().getName(), URLEncoder.encode(amrData.getUserData().getUserID(), util.UTF_8)) ;
+				} catch (UnsupportedEncodingException e) {
+					jsonObject.put(amrData.getUserData().getName(), amrData.getUserData().getUserID()) ;
+				}
 			
-			if (amrData.getSubUserData() != null) 
-				jsonObject.put(amrData.getSubUserData().getName(), amrData.getSubUserData().getUserID()) ;
+			if (amrData.getSubUserData() != null)
+				try {
+					jsonObject.put(amrData.getSubUserData().getName(), URLEncoder.encode(amrData.getSubUserData().getUserID(), util.UTF_8)) ;
+				} catch (UnsupportedEncodingException e) {
+					jsonObject.put(amrData.getSubUserData().getName(), amrData.getSubUserData().getUserID()) ;
+				}
 			
 			if (amrData.getStartIndex() != null) 
 				jsonObject.put(util.START, amrData.getStartIndex()) ;
