@@ -6,5 +6,8 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry exported="true" kind="lib" path="libs/AMR.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jericho-android.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jsoup-1.8.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/YouTubeAndroidPlayerApi.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -16,15 +16,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         
-        <service
-            android:name="com.amr.service.AMRService"
-            android:enabled="true"
-            android:process=":amr" >
-            <intent-filter>
-                <action android:name="com.amr.service.AMRService" />
-            </intent-filter>
-        </service>
-        
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >

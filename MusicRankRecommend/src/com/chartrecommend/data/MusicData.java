@@ -1,24 +1,22 @@
 package com.chartrecommend.data;
 
-import android.graphics.Bitmap;
-
 public class MusicData {
 
-	private Bitmap thumbnail ;
+	private String thumbnailSrc ;
 	private String title, artist, album ;
 
 	public MusicData () {
 		
-		this.thumbnail = null ;
+		this.thumbnailSrc = null ;
 		
 		this.title = null ;
 		this.artist = null ;
 		this.album = null ;
 	}
 	
-	public MusicData (Bitmap thumbnail, String title, String artist, String album) {
+	public MusicData (String thumbnailSrc, String title, String artist, String album) {
 		
-		this.thumbnail = thumbnail ;
+		this.thumbnailSrc = thumbnailSrc ;
 		
 		this.title = title ;
 		this.artist =artist ;
@@ -27,7 +25,7 @@ public class MusicData {
 	
 	public MusicData (MusicData musicData) {
 		
-		this.thumbnail = musicData.getThumbnail() ;
+		this.thumbnailSrc = musicData.getThumbnailSrc() ;
 		
 		this.title = musicData.getTitle() ;
 		this.artist = musicData.getArtist() ;
@@ -35,11 +33,11 @@ public class MusicData {
 	}
 	
 	// Thumbnail GetSet
-	public Bitmap getThumbnail () {
-		return this.thumbnail ;
+	public String getThumbnailSrc () {
+		return this.thumbnailSrc ;
 	}
-	public void setThumbnail (Bitmap thumbnail) {
-		this.thumbnail = thumbnail ;
+	public void setThumbnailSrc (String thumbnailSrc) {
+		this.thumbnailSrc = thumbnailSrc ;
 	}
 	
 	// title GetSet

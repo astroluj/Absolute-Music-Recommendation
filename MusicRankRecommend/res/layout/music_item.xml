@@ -11,18 +11,37 @@
         android:orientation="horizontal"
         android:weightSum="100" >
 
-        <ImageView
-            android:id="@+id/album_image"
+        <TextView
+            android:id="@+id/rank_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="10"
+            android:textColor="#FFFFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="15"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter" />
+            android:gravity="center"
+            android:orientation="vertical"
+            android:weightSum="100" >
+
+            <ImageView
+                android:id="@+id/album_image"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="80"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="85"
+            android:layout_weight="75"
             android:orientation="vertical" >
 
             <TextView

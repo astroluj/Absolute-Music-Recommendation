@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme" >
         
         <service
-            android:name="com.amr.service.AMRService"
+            android:name="com.amr.AMRService"
             android:enabled="true"
             android:process=":amr" >
             <intent-filter>

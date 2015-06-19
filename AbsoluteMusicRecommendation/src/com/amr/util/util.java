@@ -3,11 +3,6 @@ package com.amr.util;
 public class util {
 	public final static int RECONNECTION_COUNT = 3 ;
 	
-	// NetworkHandler Names
-	public final static int ANALYZE_FEATURE  = 1 ;
-	public final static int RECOMMEND_LIST = 0 ;
-	public final static int NOT_FOUND_RECOMMEND = 2 ;
-	
 	// Thread Switch Case
 	public final static int USER_REGISTER = 0 ;
 	public final static int USER_REMOVE = 1 ;

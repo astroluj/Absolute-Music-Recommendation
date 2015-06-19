@@ -1,11 +1,10 @@
 package com.music.player.activity;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.amr.aidl.amrAIDL;
+import com.amr.AMR;
 import com.amr.data.AMRData;
 import com.music.player.R;
 import com.music.player.adapter.MusicAdapter;
@@ -14,20 +13,14 @@ import com.music.player.thread.MusicSeekBarThread;
 import com.music.player.util.util;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
-import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -44,16 +37,17 @@ public class PlayActivity extends Activity {
 	public static final String TAG = "Play View :" ;
 	
 	// Custom Class
-	private RecommendationReciever recommedRecv ;
 	private RecommendAdapter recommendAdapter ;
 	private MusicAdapter musicAdapter ;
 	private MusicSeekBarThread musicSeekBarThread ;
 	private Handler musicSeekBarHandler = new Handler (new MusicSeekBarHandlerCallback ()) ;
 	
-	// AMRAIDL
-	private amrAIDL aidlAMRService ;
-	private ServiceConnection amrServiceConn ;
+	// AMR
+	private AMR amr ;
     
+	// Task-Networking 
+	AsyncTask<String, Void, ArrayList<AMRData>> asyncTask ;
+	
 	// MediaPlayBackService
 	private MediaPlayer mediaPlayer ;
 	
@@ -88,22 +82,15 @@ public class PlayActivity extends Activity {
 		//set the layout of the Activity
 		setContentView(R.layout.activity_play) ;
 				
-		// TODO : 필수
-		// AIDL SET
-		serviceConnection () ;
-				
 		//initialize views
 		initializes () ;
 	}
 
 	private void initializes () {
 		
-		// Receiver Registered and AMR called
-		if (recommedRecv == null) {
-			recommedRecv = new RecommendationReciever() ;
-			registerReceiver(recommedRecv, new IntentFilter (util.MUSIC_RECOMMEND_RESPONSE_FILTER)) ;
-		}
-				
+		// AMR Init
+		amr =new AMR () ;
+		
 		// Recommend Adatper
 		recommendAdapter = new RecommendAdapter (getApplicationContext()) ;
 		// ListView
@@ -169,25 +156,26 @@ public class PlayActivity extends Activity {
 
 					Uri musicUri = getMusicUri(currentPosition) ;
 					playMusic (musicUri) ;
-					requestRecommendList(musicUri) ;
+					
 				}
 				// On Random
 				else if (randomFlag == true) {
 
 					Uri musicUri = getMusicUri(new Random ().nextInt(maxMusicCount)) ;
 					playMusic (musicUri) ;
-					requestRecommendList(musicUri) ;
+					
 				}
 				// Off Repeat, Random
 				else {
 					Uri musicUri = getMusicUri(getMusicPosition (util.INCREASE)) ;
 					playMusic (musicUri) ;
-					requestRecommendList(musicUri) ;
+					
 				}
 			}
 		});
 		
 		playMusic (getMusicUri(currentPosition)) ;
+		
 	}
 	
 	private Uri getMusicUri (int position) {
@@ -203,6 +191,8 @@ public class PlayActivity extends Activity {
 			mediaPlayer.setDataSource(getApplicationContext(), musicUri) ;
 			mediaPlayer.prepare() ;
 			mediaPlayer.start() ;
+			
+			requestRecommendList(musicUri) ;
 			
 			// Thread Start
 			if (musicSeekBarThread != null) releaseMusicSeekBarThread() ;
@@ -225,39 +215,54 @@ public class PlayActivity extends Activity {
 		}
 	}
 	
-	private void serviceConnection () {
-		amrServiceConn = new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName name) {
-				aidlAMRService = null ;
-				Log.i(TAG + "AMR", "Disconnected!");
-			}
-
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				aidlAMRService = amrAIDL.Stub.asInterface(service);
-				// 시작 노래 추천 곡 찾기
-				requestRecommendList (getMusicUri(currentPosition)) ;
-				Log.i(TAG + "AMR", "Connected!");
-			}
-		};
-	}
-	
 	private void requestRecommendList (Uri musicUri) {
-		// Call AIDL
+		// Call AMR
 		try {
-			aidlAMRService.getKeywordToRecommendLists(util.MUSIC_RECOMMEND_RESPONSE_FILTER,
-					musicUri.toString(),
-					musicAdapter.getMusicArtist(currentPosition),
-					musicAdapter.getMusicTitle(currentPosition), 5) ;
+			// AsyncTask Init
+			asyncTask = new AsyncTask<String, Void, ArrayList<AMRData>>() {
+
+				@Override
+			    protected void onPreExecute() {
+			        super.onPreExecute();
+				}
+				
+				@Override
+				protected ArrayList<AMRData> doInBackground(String... params) {
+					
+					return amr.getKeywordToRecommendLists(params[0],
+							musicAdapter.getMusicArtist(currentPosition),
+							musicAdapter.getMusicTitle(currentPosition), 5) ;
+				}
 			
-			//aidlAMRService.setUserRegistered(null, "test") ;
-			//aidlAMRService.getReview(util.MUSIC_RECOMMEND_RESPONSE_FILTER, 0, 5);
-		} catch (RemoteException e) {
-			e.printStackTrace();
+				@Override
+			    protected void onPostExecute(ArrayList<AMRData> result) {
+			        super.onPostExecute(result);
+			         
+			        Log.d (TAG + "come :", "onPostExecute") ;
+			        
+			        // Init
+			        recommendAdapter.clearAdapter() ;
+			        
+			        // Set List View
+			        if(result == null || result.size() == 0) {
+
+			        	// Debug lists
+						recommendAdapter.putRecommendList(null, null, null, null);
+					}
+					else {
+						for (AMRData list : result) {
+							recommendAdapter.putRecommendList(
+									list.getTrackID(), list.getArtist(), 
+									list.getTitle(), list.getURL()) ;
+						}
+					}
+					// List View Shows
+					recommendListView.setAdapter(recommendAdapter);
+			    }
+			}.execute(musicUri.toString()) ;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		//aidlMediaService.open(new long [] {id}, 0);
-		//aidlMediaService.play();
 	}
 	
 	// Seek Bar controll
@@ -316,7 +321,7 @@ public class PlayActivity extends Activity {
 
 		Uri musicUri = getMusicUri(currentPosition) ;
 		playMusic (musicUri) ;
-		requestRecommendList(musicUri) ;
+		
 	}
 	
 	// Music Next Play
@@ -325,7 +330,7 @@ public class PlayActivity extends Activity {
 		
 		Uri musicUri = getMusicUri(currentPosition) ;
 		playMusic (musicUri) ;
-		requestRecommendList(musicUri) ;
+		
 	}
 	
 	// Music ReWard 15 Second
@@ -390,20 +395,12 @@ public class PlayActivity extends Activity {
 	protected void onPause () {
 		super.onPause() ;
 		
-		// AIDL disable
-		unbindService(amrServiceConn);
-		
 		musicSeekBarThread.setHandler(false ) ;
 	}
 
 	protected void onResume() {
 		super.onResume();
 
-		// AIDL enable
-		Intent amrIntent = new Intent(util.AMR_FILTER);
-		//amrIntent.setClassName(util.AMR_PACKAGE_NAME, util.AMR_CLASS_NAME) ;
-		Log.d(TAG, "AMR Connection bind " + bindService(amrIntent, amrServiceConn, BIND_AUTO_CREATE));
-	
 		musicSeekBarThread.setHandler(true ) ;
 	}
 	
@@ -414,43 +411,6 @@ public class PlayActivity extends Activity {
 		mediaPlayer.reset();
 		mediaPlayer.release();
 		
-		unregisterReceiver () ;
-		
 		if (musicSeekBarThread != null) releaseMusicSeekBarThread() ;
-	}
-	
-	private void unregisterReceiver () {
-		// UnRegister Receiver
-		try {
-			if (recommedRecv != null) {
-				unregisterReceiver(recommedRecv);
-				recommedRecv = null ;
-			} 
-		} catch (IllegalArgumentException e) {
-			recommedRecv = null ;
-		}
-	}
-	
-	//Catch Recommendation list on Intent Action 
-	public class RecommendationReciever extends BroadcastReceiver {
-		
-		public void onReceive(Context context, Intent intent) {
-
-			ArrayList<AMRData> lists = intent.getParcelableArrayListExtra("AMR Recommend List") ;
-			// Debug lists
-			recommendAdapter.clearAdapter() ;
-			if (lists == null || lists.size() == 0) {
-				recommendAdapter.putRecommendList(null, null, null, null);
-			}
-			else {
-				for (AMRData list : lists) {
-					recommendAdapter.putRecommendList(
-							list.getTrackID(), list.getArtist(), 
-							list.getTitle(), list.getURL()) ;
-				}
-			}
-			// List View Shows
-			recommendListView.setAdapter(recommendAdapter);
-		}
 	}
 }
