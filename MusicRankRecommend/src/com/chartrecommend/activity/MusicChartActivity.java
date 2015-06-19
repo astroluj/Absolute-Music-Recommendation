@@ -1,26 +1,24 @@
 package com.chartrecommend.activity;
 
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
-import com.amr.AMR;
-import com.amr.data.AMRData;
 import com.chartrecommend.R;
 import com.chartrecommend.adapter.MusicAdapter;
 import com.chartrecommend.adapter.RecommendAdapter;
 import com.chartrecommend.parser.MusicChartParser;
+import com.chartrecommend.task.RecommendTask;
+import com.chartrecommend.task.YoutubeSearchTask;
 import com.chartrecommend.util.Scale;
 import com.chartrecommend.util.util;
+import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubePlayerView;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AbsListView;
@@ -29,22 +27,24 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-public class MusicChartActivity extends Activity {
+public class MusicChartActivity extends YouTubeBaseActivity {
 
-	private static final String TAG = "Music Chart :" ;
+	private final String TAG = "Music Chart :" ;
+	// View Height
+	private int RECOMMEND_HEIGHT, YOUTUBE_HEIGHT, SUB_YOUTUBE_HEIGHT ;
 	
 	// Custom Class
 	private MusicAdapter musicAdapter ;
 	private RecommendAdapter recommendAdapter ;
 	private Scale scale ;
-	private AMR amr ;
 	
 	private YouTubePlayerView youtubeView ;
 	
 	// Task-Networking 
-	AsyncTask<String, Void, ArrayList<AMRData>> asyncTask ;
+	RecommendTask recommendTask ;
 		
 	private RelativeLayout relativeLayout ;
+	private RelativeLayout.LayoutParams params ;
 	// Top100 List
 	private ListView musicListView;
 	// Recommend List 
@@ -66,23 +66,15 @@ public class MusicChartActivity extends Activity {
 	}
 	
 	private void initializes(){
-		// AMR Lib init
-		amr = new AMR () ;
-		
 		// Scale Setting
 		// get Scale
 		DisplayMetrics disM =new DisplayMetrics () ;
 		getWindowManager ().getDefaultDisplay().getMetrics(disM) ;
 		scale =  new Scale (disM) ;
-		
-		// Youtube View Dynamic constuructor
-		/*youtubeView = new YouTubePlayerView(getApplicationContext()) ;
-		youtubeView.initialize(util.YOUTTUBE_API_KEY, getApplicationContext()) ;
-		youtubeView.setVisibility(View.GONE) ;
-		youtubeView.setLayoutParams(new LayoutParams (
-				LinearLayout.LayoutParams.WRAP_CONTENT,
-				LinearLayout.LayoutParams.WRAP_CONTENT));*/
-		
+		RECOMMEND_HEIGHT = (int)(scale.getScaleHeight() * 25 / 100) ;
+		YOUTUBE_HEIGHT = (int)(scale.getScaleHeight() * 35 / 100) ;
+		SUB_YOUTUBE_HEIGHT = (int)(scale.getScaleHeight() * 40 / 100) ;
+				
 		relativeLayout = (RelativeLayout) findViewById (R.id.relative_layout) ;
 		
 		// MusicAdapter
@@ -96,20 +88,23 @@ public class MusicChartActivity extends Activity {
 		recommendListView.setVisibility(View.GONE) ;
 		recommendListView.setLayoutParams(new LayoutParams(
 				RelativeLayout.LayoutParams.MATCH_PARENT,
-				(int)(scale.getScaleHeight() * 25 / 100))) ;
+				RECOMMEND_HEIGHT)) ;
 		
 		/* Listener for selecting a item */
 		recommendListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
             	
             	// 유투브 연결
+            	String split = "watch?v=", data = recommendAdapter.getMusicUri(position) ;
+            	int watchIndex = data.indexOf(split) ;
+            	
+            	if (watchIndex > 0) 
+            		data = data.substring(watchIndex + split.length(), data.length()) ;
+            	
             	try {
-	            	Intent intent =new Intent(
-	            			Intent.ACTION_VIEW,
-	            			Uri.parse(recommendAdapter.getMusicUri(position))) ; 
-	            	startActivity(intent) ;
-            	} catch (NullPointerException e) {
-            		Log.d (TAG, "Not-exist Recommend List") ;
+            		youtubeService(data) ;
+            	} catch (IndexOutOfBoundsException e) {
+            		e.printStackTrace();
             	}
             }
         });
@@ -129,15 +124,15 @@ public class MusicChartActivity extends Activity {
 		musicListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
             	
+            	// Other Views show
             	if (recommendListView.getVisibility() == View.GONE) 
             		recommendListView.setVisibility(View.VISIBLE) ;
             	
-            	if (youtubeView.getVisibility() == View.GONE) {
-            		youtubeView.setVisibility(View.VISIBLE) ;
-            		relativeLayout.addView(youtubeView) ;
-            	}
-            		
         		recommendService(position) ;
+        		youtubeService(musicAdapter.getMusicArtist(position) + " "
+							+ musicAdapter.getMusicTitle(position)) ;
+        		
+        		setMusicListViewLayout (youtubeView != null) ;
         	}
         });
 		// Listener for scrolling 
@@ -146,9 +141,9 @@ public class MusicChartActivity extends Activity {
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
 				
-				if (recommendListView.getVisibility() == View.VISIBLE) {
+				// Other Views hide
+				if (recommendListView.getVisibility() == View.VISIBLE) 
             		recommendListView.setVisibility(View.GONE) ;
-				}
 			}
 			
 			@Override
@@ -162,60 +157,92 @@ public class MusicChartActivity extends Activity {
 				getIntent().getIntExtra(util.CASE_KEY, -1)) ;
 	}
 
+	// Youtube Service
+	private void youtubeService (String watchData) {
+		
+		try {
+			// Youtube View Dynamic constuructor
+			if (youtubeView != null) {
+				youtubeView.removeAllViews() ;
+				relativeLayout.removeView(youtubeView) ;
+				youtubeView = null ;
+			}
+			youtubeView = new YouTubePlayerView(MusicChartActivity.this) ;
+			params = new RelativeLayout.LayoutParams (
+					new LayoutParams (
+							RelativeLayout.LayoutParams.WRAP_CONTENT,
+							YOUTUBE_HEIGHT)) ;
+			params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM) ;
+			youtubeView.setLayoutParams(params);
+			relativeLayout.addView(youtubeView) ;
+			
+			new YoutubeSearchTask(youtubeView).execute(
+					URLEncoder.encode(watchData, util.UTF_8)) ;
+			
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			if (youtubeView != null) {
+				youtubeView.removeAllViews() ;
+				relativeLayout.removeView(youtubeView) ;
+				youtubeView = null ;
+			}
+		}
+	}
+	
+	// MusicAdapter Set
 	private void setMusicAdapter (String url, int CASE) {
 		
 		new MusicChartParser (MusicChartActivity.this,
 				musicAdapter, musicListView, CASE).execute(url) ;
 	}
 	
+	// MusicListView Layout
+	private void setMusicListViewLayout (boolean isYoutubeVisible) {
+
+		if (isYoutubeVisible) {
+			params = new RelativeLayout.LayoutParams(new LayoutParams(
+					RelativeLayout.LayoutParams.MATCH_PARENT,
+					(int)(scale.getScaleHeight() - SUB_YOUTUBE_HEIGHT))) ;
+		}
+		else {
+			params = new RelativeLayout.LayoutParams(new LayoutParams(
+					RelativeLayout.LayoutParams.MATCH_PARENT,
+					RelativeLayout.LayoutParams.MATCH_PARENT)) ;
+		}
+		// apply layout
+		musicListView.setLayoutParams(params) ;
+		relativeLayout.invalidate() ;
+	}
+	
+	// Called AMR
 	private void recommendService(int position) {
 		// music uri, position
 		currentPosition = position ;
-		// AsyncTask Init
-		asyncTask = new AsyncTask<String, Void, ArrayList<AMRData>>() {
-
-			ProgressDialog progressDialog ;
-			@Override
-		    protected void onPreExecute() {
-		        super.onPreExecute();
-		        
-			     // Loading Progress
-		        progressDialog = new ProgressDialog(MusicChartActivity.this);
-		        progressDialog.setTitle("Music Chart Recommendation");
-		        progressDialog.setMessage("Recommend List Loading...");
-		        progressDialog.setIndeterminate(false);
-		        progressDialog.show();
-			}
-			
-			@Override
-			protected ArrayList<AMRData> doInBackground(String... params) {
-				
-				return amr.getKeywordToRecommendLists(params[0],
-						musicAdapter.getMusicArtist(currentPosition),
-						musicAdapter.getMusicTitle(currentPosition), 10) ;
-			}
 		
-			@Override
-		    protected void onPostExecute(ArrayList<AMRData> result) {
-		        super.onPostExecute(result);
-		         
-		        Log.d (TAG + "come :", "onPostExecute") ;
-		        
-		        // Recommed Adatper Init
-		        recommendAdapter.clearAdapter() ;
-		        
-		        // Set List View
-		        if(result == null || result.size() == 0) 
-		        	// Debug lists
-					recommendAdapter.putRecommendList(null, null, null, null) ;
-				else recommendAdapter.putRecommendList(result) ;
-		        
-				// List View Shows
-				recommendListView.setAdapter(recommendAdapter);
-				
-				// Clear Progress
-		        progressDialog.dismiss() ;
-		    }
-		}.execute("") ;
+		// AsyncTask Init
+		String featureUri = null ;
+		new RecommendTask(this, 
+				musicAdapter, recommendAdapter, 
+				recommendListView, currentPosition).execute(featureUri) ;
     }
+	
+	@Override 
+	public boolean onKeyDown(int keyCode, KeyEvent event){ 
+		
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (youtubeView != null) {
+
+				youtubeView.removeAllViews() ;
+				relativeLayout.removeView(youtubeView) ;
+				youtubeView = null ;
+				
+				setMusicListViewLayout (youtubeView != null) ;
+
+				return false ;
+			}
+		}
+		
+		return super.onKeyDown(keyCode, event); 
+	} 
+
 }
